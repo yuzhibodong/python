@@ -1,11 +1,9 @@
-t1 = (1, 2, 3)
-t2 = (1, [2, 3])
-d1 = {t1}
-#d2 = {t2}
-s1 = {t1}
-#s2 = {t2}
+def calc(*numbers):
+    sum = 0
+    for n in numbers:
+        sum = sum + n * n
+    return sum
 
-print d1
-print d2
-print s1
-print s2
+a = (1, 2, 3)
+
+print calc(*a)
