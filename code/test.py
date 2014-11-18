@@ -1,9 +1,4 @@
-def calc(*numbers):
-    sum = 0
-    for n in numbers:
-        sum = sum + n * n
-    return sum
+d = {'a': 1, 'b': 2, 'c': 3}
 
-a = (1, 2, 3)
-
-print calc(*a)
+for x in d.iter():
+    print x
