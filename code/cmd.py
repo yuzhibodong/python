@@ -176,3 +176,52 @@ for x in d.iteritems():
 >>>isinstance('abc', Iterable) #str是否可迭代
 True
 
+#对list实现类似Java那样的下标循环
+for i, value in enumerate(['A', 'B', 'C']):
+    print i, value
+
+#------------------------------------------------------
+#生成器(generator)
+#保存的是算法
+#------------------------------------------------------
+#方法一 由List生成
+g = (x for x in range(10))
+for x in g:
+    print x
+#方法二 由函数生成
+def fib(max):
+    n, a, b = 0, 0, 1
+    while n < max:
+        yield b
+        #··· “=”右边先进行计算，即生成一个新的tuple：（b,a+b），之后依次赋值给左边a,b。在内存里是开辟了一个新空间来存储这个计算结果的
+        a, b = b, a + b
+        n = n + 1
+
+for x in fib(6):
+    print x
+
+#------------------------------------------------------
+#高阶函数
+#map/reduce
+#------------------------------------------------------
+#map 序列依次代入第一个函数
+#reduce 序列[1, 2]return的值再与后面的第三项作用  f(f(x1, x2),x3)
+def char2num(s):
+    #等价 d{...}   d['1']
+    return {'0': 0, '1': 1, '2': 2, '3': 3, '4': 4, '5': 5, '6': 6, '7': 7, '8': 8, '9': 9}[s]
+
+def str2int(s):
+    return reduce(lambda x,y: x*10+y, map(char2num, s))
+
+#------------------------------------------------------
+#闭包(closure)
+#难点 仍未完全理解
+#------------------------------------------------------
+#sum可以直接使用args, 且返回函数本身
+def lazy_sum(*args):
+    def sum():
+        ax = 0
+        for n in args:
+            ax = ax + n
+        return ax
+    return sum
