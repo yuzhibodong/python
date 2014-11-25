@@ -1,18 +1,12 @@
-def add(x):
-    return x+1
+import functools
 
-# def my_map(fun, *args):
-#     L = []
-#     L.append(fun(x) for x in args)
-#     return L
+def fun(a, b, c):
+    return a+b+c
 
-# print my_map(add, [1, 2, 3])
-def my(f, l):
-    return [f(i) for i in l]
+fun3 = functools.partial(fun, b=2, c=3)
 
-print my(add, [1, 2])
+print fun3(1)
 
-def prod(*l):
-    return reduce(lambda x, y: x * y, l)
+int2 = functools.partial(int, '100', base=2)
 
-print prod([1,2,3])
+print int2()

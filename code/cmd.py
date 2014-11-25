@@ -1,3 +1,6 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
 #---------------------
 #数据类型和变量
 #---------------------
@@ -225,3 +228,27 @@ def lazy_sum(*args):
             ax = ax + n
         return ax
     return sum
+
+#------------------------------------------------------
+#偏函数
+#给函数设定默认参数并生成新函数
+#------------------------------------------------------
+import functools
+
+#int 参数从base进制转换为10进制
+#4
+print int('100', base=2)
+#4
+int2 = functools.partial(int, base=2)
+print int2()
+#多参数固定
+fun3 = functools.partial(fun, b=2, c=3)
+
+#------------------------------------------------------
+#别名
+#------------------------------------------------------
+#应用场景
+try:
+    import cStringIO as StringIO #cStringIO用C写的 速度快
+except ImportError: # 导入失败会捕获到ImportError
+    import StringIO
