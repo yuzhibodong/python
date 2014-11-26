@@ -1,12 +1,8 @@
-import functools
+# still running on Python 2.7
 
-def fun(a, b, c):
-    return a+b+c
+from __future__ import unicode_literals
 
-fun3 = functools.partial(fun, b=2, c=3)
-
-print fun3(1)
-
-int2 = functools.partial(int, '100', base=2)
-
-print int2()
+print '\'xxx\' is unicode?', isinstance('xxx', unicode)
+print 'u\'xxx\' is unicode?', isinstance(u'xxx', unicode)
+print '\'xxx\' is str?', isinstance('xxx', str)
+print 'b\'xxx\' is str?', isinstance(b'xxx', str)
