@@ -1,18 +1,8 @@
-def add(x):
-    return x+1
+# still running on Python 2.7
 
-# def my_map(fun, *args):
-#     L = []
-#     L.append(fun(x) for x in args)
-#     return L
+from __future__ import unicode_literals
 
-# print my_map(add, [1, 2, 3])
-def my(f, l):
-    return [f(i) for i in l]
-
-print my(add, [1, 2])
-
-def prod(*l):
-    return reduce(lambda x, y: x * y, l)
-
-print prod([1,2,3])
+print '\'xxx\' is unicode?', isinstance('xxx', unicode)
+print 'u\'xxx\' is unicode?', isinstance(u'xxx', unicode)
+print '\'xxx\' is str?', isinstance('xxx', str)
+print 'b\'xxx\' is str?', isinstance(b'xxx', str)
