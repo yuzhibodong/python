@@ -15,7 +15,7 @@ z = 122
 #ASCII转换
 ord('A')
 chr(65)
-#Unicode表示的字符串用u'...'表示
+#Unicode表示的字符串用u''表示
 u'A' == u'\u0041'
 #把u'xxx'转换为UTF-8编码的'xxx'用encode('utf-8')方法
 >>> u'ABC'.encode('utf-8')
@@ -210,7 +210,7 @@ for x in fib(6):
 #map 序列依次代入第一个函数
 #reduce 序列[1, 2]return的值再与后面的第三项作用  f(f(x1, x2),x3)
 def char2num(s):
-    #等价 d{...}   d['1']
+    #等价 d{}   d['1']
     return {'0': 0, '1': 1, '2': 2, '3': 3, '4': 4, '5': 5, '6': 6, '7': 7, '8': 8, '9': 9}[s]
 
 def str2int(s):
@@ -252,3 +252,46 @@ try:
     import cStringIO as StringIO #cStringIO用C写的 速度快
 except ImportError: # 导入失败会捕获到ImportError
     import StringIO
+
+#------------------------------------------------------
+#类(Class)和实例(Instance)
+#类内函数(Method)第一个参数永远是实例变量self,
+#并且,调用时,不用传递该参数
+#成员不需要预定义,可以直接在实例中增加(不影响其他实例)
+#------------------------------------------------------
+
+#------------------------------------------------------
+#获取对象信息
+#------------------------------------------------------
+#-----------type()
+#判断对象的引用  的类型
+>>>type(123)
+<type 'int'>
+>>>import types
+>>>type('abc')==types.StringType
+>>>type(int)==types.TypeType
+#---------instance()
+isinstance('a', str)
+#判断变量是某些类型中的一种
+isinstance('a', (str, unicode))
+#-------------dir()
+#获得一个对象的所有属性和方法
+>>>dir('abc')
+class MyObject(object):
+    def __init__(self):
+        self.x = 9
+    def power(self):
+        return self.x * self.xclass MyObject(object):
+obj = MyObject()
+hasattr(obj, 'x') #是否存在?True
+setattr(obj, 'y', 19) #设置
+getattr(obj, 'y') #获取属性
+getattr(obj, 'y', 404) #获取属性,若不存在,返回默认值404
+
+#------------------------------------------------------
+#__slots__
+#限定可以绑定的方法和属性
+#仅对当前类起作用, 子类需增加__slots__才能继承
+#------------------------------------------------------
+class Sample(object):
+    __slots__ = ('name', 'age') #用tuple定义允许绑定的属性
