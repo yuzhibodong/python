@@ -1,20 +1,16 @@
 class Student(object):
+    def __init__(self):
+        self.name = '22'
 
-    @property
-    def score(self):
-        return self._score
+    def __getattr__(self, attr):
+        return lambda :"22"
 
-    #@score.setter
-    def score(self, value):
-        if not isinstance(value, int):
-            raise ValueError('score must be an integer!')
-        if value < 0 or value > 100:
-            raise ValueError('score must between 0 ~ 100!')
-        self._score = value
+    # def __repr__(self):
+    #     return self.name
+
+    # def __call__(self):
+    #     print('My name is %s.' % self.name)
+
 
 s = Student()
-s.score = 60
-print s.score
-s.score = 99
-print s.score
-print dir(s)
+print s.age()

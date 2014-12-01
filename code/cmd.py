@@ -295,3 +295,87 @@ getattr(obj, 'y', 404) #获取属性,若不存在,返回默认值404
 #------------------------------------------------------
 class Sample(object):
     __slots__ = ('name', 'age') #用tuple定义允许绑定的属性
+
+#------------------------------------------------------
+#定制类
+#下列均为方法
+#------------------------------------------------------
+
+#__str__()-----------------
+#定义打印类时输出(用户)
+c = class()
+print '%s' % c
+#__repr__()----------------
+#定义直接显示变量时输出(开发者), 且一般与__str__一致
+__repr__ = __str__
+print '%r' % c
+
+#__iter__()-----------------
+#实现循环
+class Fib(object):
+    def __init__(self):
+        self.a, self.b = 0, 1 # 初始化两个计数器a，b
+
+    def __iter__(self):
+        return self # 实例本身就是迭代对象，故返回自己
+
+    def next(self):
+        self.a, self.b = self.b, self.a + self.b # 计算下一个值
+        if self.a > 100000: # 退出循环的条件
+            raise StopIteration();
+        return self.a # 返回下一个值
+for n in Fib():
+    print n
+
+#__getitem__()-----------------
+#自定义实现类似list[1]取出下标元素的方法名
+
+#__getattr__()-----------------
+#动态返回属性或者方法, 区别为返回值, 见下面
+#此方法默认返回None, 否则需要抛出AttributeError
+#当调用不存在的属性或者方法时,会尝试调用__getattr__来获得
+def __getattr__(self, attr):
+        if attr=='age':
+            return lambda: 25
+        elif attr=='name':
+            return 'Hello'
+        raise AttributeError('\'Student\' object has no attribute \'%s\'' % attr)
+s.name #attr return attr
+s.age() #method return lambda: attr
+
+#这实际上可以把一个类的所有属性和方法调用全部动态化处理了，不需要任何特殊手段。
+#这种完全动态调用的特性有什么实际作用呢？作用就是，可以针对完全动态的情况作调用。
+
+#上述用例 SDK调用API时
+class Chain2(object):
+
+    def __init__(self, path=''):
+        self._path = path
+
+    def __getattr__(self, path):
+        print 'self._path:{0}\tpath:{1}'.format(self._path, path)
+        #返回一个完整的字符串作为新的Chain2的输入
+        return Chain2('%s/%s' % (self._path, path))
+
+    def __str__(self):
+        return self._path
+
+    def __call__(self, user):
+        print 'self._path:{0}\tuser:{1}'.format(self._path, user)
+        return Chain2('%s/%s' % (self._path, user))
+
+#/users/:user/repos
+print Chain2().users('michael').repos
+
+#__call__()-----------------
+# s()状态下(即实例(instance)本身上调用)调用, 而不是调用s.method()
+#此时对象和函数的界限已区别不大
+#没有__call__,返回TypeError
+
+#判断一个变量是否能被调用
+>>>callable(Chain2())
+True
+>>>callable(max)
+True
+>>>callable('string')
+False
