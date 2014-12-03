@@ -1,16 +1,17 @@
-class Student(object):
-    def __init__(self):
-        self.name = '22'
+# err.py
+import logging
 
-    def __getattr__(self, attr):
-        return lambda :"22"
+def foo(s):
+    return 10 / int(s)
 
-    # def __repr__(self):
-    #     return self.name
+def bar(s):
+    return foo(s) * 2
 
-    # def __call__(self):
-    #     print('My name is %s.' % self.name)
+def main():
+    try:
+        bar('0')
+    except StandardError, e:
+        logging.exception(e)
 
-
-s = Student()
-print s.age()
+main()
+print 'END'

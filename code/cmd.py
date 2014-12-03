@@ -379,3 +379,66 @@ True
 True
 >>>callable('string')
 False
+
+#------------------------------------------------------
+#错误处理
+#错误捕获可以跨越多层调用, 即子函数错误可由父函数捕获
+#------------------------------------------------------
+
+#常见的错误类型和继承关系
+https://docs.python.org/2/library/exceptions.html#exception-hierarchy
+
+#trt
+#try运行,执行出错,跳转except
+try:
+    pass
+#捕获异常,处理后跳转finally
+except Exception, e:
+    raise
+#如果没有捕获错误, 则会执行else
+else:
+    pass
+#可没有, 如果存在finally, 则一定会执行
+finally:
+    pass
+
+#logging
+#记录错误, 捕获错误后程序会继续执行
+########
+import logging
+
+def foo(s):
+    return 10 / int(s)
+
+def bar(s):
+    return foo(s) * 2
+
+def main():
+    try:
+        bar('0')
+    except StandardError, e:
+        logging.exception(e)
+
+main()
+print 'END'
+########
+
+#raise
+#raise语句如果不带参数，就会把当前错误原样抛出
+#此例中捕获错误后有raise错误,在于当前函数不知道怎么处理错误,继续向上抛出,让上层调用者处理
+#raise还可以抛出其他类型错误(转换错误类型,但应做到逻辑合理)
+def foo(s):
+    n = int(s)
+    return 10 / n
+
+def bar(s):
+    try:
+        return foo(s) * 2
+    except StandardError, e:
+        print 'Error!'
+        raise
+
+def main():
+    bar('0')
+
+main()
