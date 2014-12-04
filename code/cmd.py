@@ -442,3 +442,41 @@ def main():
     bar('0')
 
 main()
+
+#------------------------------------------------------
+#调试
+#------------------------------------------------------
+
+#断言
+#如果表达式false, 输出后半句, 同时抛出AssertionError
+assert n!=0, 'n is zero!'
+#程序运行时可以用-O参数关闭, 此时assert语句相当于 pass
+python -O err.py
+
+#logging
+#允许指定信息记录的级别,debug, info, warning, error
+import logging
+#指定level=INFO时,logging,debug就不起作用了,类推
+logging.basicConfig(level=logging.INFO)
+
+s = '0'
+n = int(s)
+logging.info('n = %d' % n)
+print 10 / n
+
+#pdb
+#单步调试
+#l 查看代码
+#n 下一步
+#p [变量] 查看变量值
+#q 结束调试
+$ python -m pdb err.py
+
+#pdb.set_trace()
+#p 查看变量
+#c 继续运行
+#err.py
+import pdb
+..........
+pdb.set_trace() #运行到这里自动暂停
+..........
