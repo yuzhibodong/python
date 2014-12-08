@@ -8,6 +8,7 @@ class Dict(object):
         try:
             return self[key]
         except Exception, e:
-            raise AttributeError(r"'Dict object has no attributeError '%s'" % key
+            raise AttributeError(r"'Dict object has no attributeError '%s'" % key)
+
     def __setattr__(self, key, value):
         self[key] = value
