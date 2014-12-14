@@ -480,3 +480,16 @@ import pdb
 ..........
 pdb.set_trace() #运行到这里自动暂停
 ..........
+
+#------------------------------------------------------
+#文件读写
+#------------------------------------------------------
+#with语句来自动帮我们调用close()方法
+with open('/path/to/file', 'r') as f:
+    print f.read()
+#读取非ASCII编码的文本文件, 必须要二进制打开, 再解码
+import codecs
+with codecs.open('/usr/michael/gbk.txt', 'r', 'gbk') as f:
+    f.read() #u'\u6d4b\u8bd5'
+
+#文件写入同读取 'w' 'wb'->二进制
