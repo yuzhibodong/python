@@ -493,3 +493,25 @@ with codecs.open('/usr/michael/gbk.txt', 'r', 'gbk') as f:
     f.read() #u'\u6d4b\u8bd5'
 
 #文件写入同读取 'w' 'wb'->二进制
+
+#------------------------------------------------------
+#操作文件和目录
+#------------------------------------------------------
+#显示操作系统名称
+os.name #nt->Windows posix->Linux Unix Mac OS X
+#获取系统详细信息(非Windows)
+os.uname
+#环境变量
+os.environ #查看
+os.getenv('PATH') #获取
+#操作文件和目录
+import os.path
+#查看当前目录的绝对路径
+os.path.abspath('.')
+#当前目录下新建目录
+os.mkdir('./testdir')
+#删除目录
+os.rmdir('./testdir')
+
+#路径合成
+os.path.join()
