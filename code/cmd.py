@@ -513,5 +513,32 @@ os.mkdir('./testdir')
 #删除目录
 os.rmdir('./testdir')
 
-#路径合成
-os.path.join()
+#路径合成,不要直接拼接字符串, 可以正确处理不同操作系统的路径分隔符
+#不要求路径真实存在,仅是对字符串进行操作
+os.path.join('./part-1', 'part-2')
+#Linux/Unix/Mac
+part-1/part-2
+#Windows
+part-1\part-2
+#路径拆分
+os.path.split()
+#拆分路径, 后一部分总是最后级别的目录或文件名
+>>>os.path.split('Users/testdir/file.txt')
+('/Users/michael/testdir', 'file.txt')
+#可以直接得到文件扩展名
+>>>os.path.splitext('/path/to/file.txt')
+('/path/to/file', '.txt')
+
+#重命名
+os.rename('test.txt', 'test.py')
+#删除文件
+os.remove('test.py')
+#复制,不在os模块, 在shutil中
+import shutil
+shutil.copyfile(src, dst)
+
+#列出当前目录下的所有目录(利用Python的特性来过滤文件)
+x for x in os.listdir('.') if os.path.isdir(x)
+#列出所有.py文件
+x for x in os.listdir('.') if os.path.isfile(x) and os.path.splitext(x)[1]=='.py'
+
