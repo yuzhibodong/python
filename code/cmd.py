@@ -468,6 +468,8 @@ print 10 / n
 #单步调试
 #l 查看代码
 #n 下一步
+#s 步进
+#h help
 #p [变量] 查看变量值
 #q 结束调试
 $ python -m pdb err.py

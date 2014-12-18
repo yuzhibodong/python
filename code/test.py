@@ -7,6 +7,6 @@ def search(x):
         if os.path.isfile(x):
             print os.path.split(x)
         elif os.path.isdir(x):
-
+            search(./x)
 
 search()
