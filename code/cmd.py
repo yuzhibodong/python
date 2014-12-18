@@ -544,3 +544,17 @@ x for x in os.listdir('.') if os.path.isdir(x)
 #列出所有.py文件
 x for x in os.listdir('.') if os.path.isfile(x) and os.path.splitext(x)[1]=='.py'
 
+#------------------------------------------------------
+#序列化
+#------------------------------------------------------
+#cPickle是C语言写的,速度快,pickle是纯Python写的
+try:
+    import cPickle as pickle
+except ImportError:
+    import pickle
+
+#把对象序列化为一个str
+d = dict()
+f = open('dump.txt', 'wb')
+pickle.dump(d, f)
+f.close()
