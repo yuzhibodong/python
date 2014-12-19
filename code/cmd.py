@@ -548,6 +548,7 @@ x for x in os.listdir('.') if os.path.isfile(x) and os.path.splitext(x)[1]=='.py
 #序列化
 #------------------------------------------------------
 #cPickle是C语言写的,速度快,pickle是纯Python写的
+#仅能用于Python
 try:
     import cPickle as pickle
 except ImportError:
@@ -558,3 +559,18 @@ d = dict()
 f = open('dump.txt', 'wb')
 pickle.dump(d, f)
 f.close()
+#反序列化
+f = open('dump.txt', 'rb')
+d = pickle.load(f)
+f.close()
+
+#JSON
+import json
+d = dict(name='Bob', age=20, score=88)
+json.dumps(d) #dumps返回一个str,内容是标准JSON
+#反序列化
+>>> json_str = '{"age": 20, "score": 88, "name": "Bob"}'
+>>> json.loads(json_str)
+{u'age': 20, u'score': 88, u'name': u'Bob'}
+#dumps,loads 针对字符串, dump load 针对file-like Object
+#反序列化得到的所有字符串对象默认都是unicode而不是str。由于JSON标准规定JSON编码是UTF-8，所以我们总是能正确地在Python的str或unicode与JSON的字符串之间转换。
