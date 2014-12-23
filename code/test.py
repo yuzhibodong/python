@@ -1,12 +1,7 @@
 # -*- coding:utf-8 -*-
-import os
+def prod(*s):
+    return reduce(lambda x,y:x+y,s)
 
-print 'Process %s ' % os.getpid()
+l = [1,2,3,4]
 
-pid = os.fork()
-
-if pid == 0:
-    print 'I am child process %s and my parent is %s' % (os.getpid(), os.getppid())
-
-else:
-    print 'I %s just create a child process %s' % (os.getpid(), pid)
+print prod(l)

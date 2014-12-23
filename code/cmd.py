@@ -574,3 +574,31 @@ json.dumps(d) #dumps返回一个str,内容是标准JSON
 {u'age': 20, u'score': 88, u'name': u'Bob'}
 #dumps,loads 针对字符串, dump load 针对file-like Object
 #反序列化得到的所有字符串对象默认都是unicode而不是str。由于JSON标准规定JSON编码是UTF-8，所以我们总是能正确地在Python的str或unicode与JSON的字符串之间转换。
+
+#------------------------------------------------------
+#多进程
+#multiprocessing
+#------------------------------------------------------
+
+#进程池
+#Pool
+from multiprocessing import Pool
+import os, time, random
+
+def long_time_task(name):
+    print 'Run task %s (%s)...' % (name, os.getpid())
+    start = time.time() #起始时间
+    time.sleep(random.random() * 3) #延时
+    end = time.time() #停止时间
+    #%0.2f 0->有效数字位数 .2->小数点后保留位数
+    print 'Task %s runs %0.2f seconds.' % (name, (end - start))
+
+if __name__ == '__main__':
+    print 'Parent process %s' % os.getpid()
+    p = Pool()
+    for i in range(5):
+        p.apply_async(long_time_task, args=(i,))
+    print 'Waiting for all subprocess done...'
+    p.close()
+    p.join()
+    print 'All subprocesses done.'
