@@ -1,8 +1,7 @@
-# still running on Python 2.7
+# -*- coding:utf-8 -*-
+def prod(*s):
+    return reduce(lambda x,y:x+y,s)
 
-from __future__ import unicode_literals
+l = [1,2,3,4]
 
-print '\'xxx\' is unicode?', isinstance('xxx', unicode)
-print 'u\'xxx\' is unicode?', isinstance(u'xxx', unicode)
-print '\'xxx\' is str?', isinstance('xxx', str)
-print 'b\'xxx\' is str?', isinstance(b'xxx', str)
+print prod(l)

@@ -15,7 +15,7 @@ z = 122
 #ASCII转换
 ord('A')
 chr(65)
-#Unicode表示的字符串用u'...'表示
+#Unicode表示的字符串用u''表示
 u'A' == u'\u0041'
 #把u'xxx'转换为UTF-8编码的'xxx'用encode('utf-8')方法
 >>> u'ABC'.encode('utf-8')
@@ -210,7 +210,7 @@ for x in fib(6):
 #map 序列依次代入第一个函数
 #reduce 序列[1, 2]return的值再与后面的第三项作用  f(f(x1, x2),x3)
 def char2num(s):
-    #等价 d{...}   d['1']
+    #等价 d{}   d['1']
     return {'0': 0, '1': 1, '2': 2, '3': 3, '4': 4, '5': 5, '6': 6, '7': 7, '8': 8, '9': 9}[s]
 
 def str2int(s):
@@ -252,3 +252,353 @@ try:
     import cStringIO as StringIO #cStringIO用C写的 速度快
 except ImportError: # 导入失败会捕获到ImportError
     import StringIO
+
+#------------------------------------------------------
+#类(Class)和实例(Instance)
+#类内函数(Method)第一个参数永远是实例变量self,
+#并且,调用时,不用传递该参数
+#成员不需要预定义,可以直接在实例中增加(不影响其他实例)
+#------------------------------------------------------
+
+#------------------------------------------------------
+#获取对象信息
+#------------------------------------------------------
+#-----------type()
+#判断对象的引用  的类型
+>>>type(123)
+<type 'int'>
+>>>import types
+>>>type('abc')==types.StringType
+>>>type(int)==types.TypeType
+#---------instance()
+isinstance('a', str)
+#判断变量是某些类型中的一种
+isinstance('a', (str, unicode))
+#-------------dir()
+#获得一个对象的所有属性和方法
+>>>dir('abc')
+class MyObject(object):
+    def __init__(self):
+        self.x = 9
+    def power(self):
+        return self.x * self.xclass MyObject(object):
+obj = MyObject()
+hasattr(obj, 'x') #是否存在?True
+setattr(obj, 'y', 19) #设置
+getattr(obj, 'y') #获取属性
+getattr(obj, 'y', 404) #获取属性,若不存在,返回默认值404
+
+#------------------------------------------------------
+#__slots__
+#限定可以绑定的方法和属性
+#仅对当前类起作用, 子类需增加__slots__才能继承
+#------------------------------------------------------
+class Sample(object):
+    __slots__ = ('name', 'age') #用tuple定义允许绑定的属性
+
+#------------------------------------------------------
+#定制类
+#下列均为方法
+#------------------------------------------------------
+
+#__str__()-----------------
+#定义打印类时输出(用户)
+c = class()
+print '%s' % c
+#__repr__()----------------
+#定义直接显示变量时输出(开发者), 且一般与__str__一致
+__repr__ = __str__
+print '%r' % c
+
+#__iter__()-----------------
+#实现循环
+class Fib(object):
+    def __init__(self):
+        self.a, self.b = 0, 1 # 初始化两个计数器a，b
+
+    def __iter__(self):
+        return self # 实例本身就是迭代对象，故返回自己
+
+    def next(self):
+        self.a, self.b = self.b, self.a + self.b # 计算下一个值
+        if self.a > 100000: # 退出循环的条件
+            raise StopIteration();
+        return self.a # 返回下一个值
+for n in Fib():
+    print n
+
+#__getitem__()-----------------
+#自定义实现类似list[1]取出下标元素的方法名
+
+#__getattr__()-----------------
+#动态返回属性或者方法, 区别为返回值, 见下面
+#此方法默认返回None, 否则需要抛出AttributeError
+#当调用不存在的属性或者方法时,会尝试调用__getattr__来获得
+def __getattr__(self, attr):
+        if attr=='age':
+            return lambda: 25
+        elif attr=='name':
+            return 'Hello'
+        raise AttributeError('\'Student\' object has no attribute \'%s\'' % attr)
+s.name #attr return attr
+s.age() #method return lambda: attr
+
+#这实际上可以把一个类的所有属性和方法调用全部动态化处理了，不需要任何特殊手段。
+#这种完全动态调用的特性有什么实际作用呢？作用就是，可以针对完全动态的情况作调用。
+
+#上述用例 SDK调用API时
+class Chain2(object):
+
+    def __init__(self, path=''):
+        self._path = path
+
+    def __getattr__(self, path):
+        print 'self._path:{0}\tpath:{1}'.format(self._path, path)
+        #返回一个完整的字符串作为新的Chain2的输入
+        return Chain2('%s/%s' % (self._path, path))
+
+    def __str__(self):
+        return self._path
+
+    def __call__(self, user):
+        print 'self._path:{0}\tuser:{1}'.format(self._path, user)
+        return Chain2('%s/%s' % (self._path, user))
+
+#/users/:user/repos
+print Chain2().users('michael').repos
+
+#__call__()-----------------
+# s()状态下(即实例(instance)本身上调用)调用, 而不是调用s.method()
+#此时对象和函数的界限已区别不大
+#没有__call__,返回TypeError
+
+#判断一个变量是否能被调用
+>>>callable(Chain2())
+True
+>>>callable(max)
+True
+>>>callable('string')
+False
+
+#------------------------------------------------------
+#错误处理
+#错误捕获可以跨越多层调用, 即子函数错误可由父函数捕获
+#------------------------------------------------------
+
+#常见的错误类型和继承关系
+https://docs.python.org/2/library/exceptions.html#exception-hierarchy
+
+#trt
+#try运行,执行出错,跳转except
+try:
+    pass
+#捕获异常,处理后跳转finally
+except Exception, e:
+    raise
+#如果没有捕获错误, 则会执行else
+else:
+    pass
+#可没有, 如果存在finally, 则一定会执行
+finally:
+    pass
+
+#logging
+#记录错误, 捕获错误后程序会继续执行
+########
+import logging
+
+def foo(s):
+    return 10 / int(s)
+
+def bar(s):
+    return foo(s) * 2
+
+def main():
+    try:
+        bar('0')
+    except StandardError, e:
+        logging.exception(e)
+
+main()
+print 'END'
+########
+
+#raise
+#raise语句如果不带参数，就会把当前错误原样抛出
+#此例中捕获错误后有raise错误,在于当前函数不知道怎么处理错误,继续向上抛出,让上层调用者处理
+#raise还可以抛出其他类型错误(转换错误类型,但应做到逻辑合理)
+def foo(s):
+    n = int(s)
+    return 10 / n
+
+def bar(s):
+    try:
+        return foo(s) * 2
+    except StandardError, e:
+        print 'Error!'
+        raise
+
+def main():
+    bar('0')
+
+main()
+
+#------------------------------------------------------
+#调试
+#------------------------------------------------------
+
+#断言
+#如果表达式false, 输出后半句, 同时抛出AssertionError
+assert n!=0, 'n is zero!'
+#程序运行时可以用-O参数关闭, 此时assert语句相当于 pass
+python -O err.py
+
+#logging
+#允许指定信息记录的级别,debug, info, warning, error
+import logging
+#指定level=INFO时,logging,debug就不起作用了,类推
+logging.basicConfig(level=logging.INFO)
+
+s = '0'
+n = int(s)
+logging.info('n = %d' % n)
+print 10 / n
+
+#pdb
+#单步调试
+#l 查看代码
+#n 下一步
+#s 步进
+#h help
+#p [变量] 查看变量值
+#q 结束调试
+$ python -m pdb err.py
+
+#pdb.set_trace()
+#p 查看变量
+#c 继续运行
+#err.py
+import pdb
+..........
+pdb.set_trace() #运行到这里自动暂停
+..........
+
+#------------------------------------------------------
+#文件读写
+#------------------------------------------------------
+#with语句来自动帮我们调用close()方法
+with open('/path/to/file', 'r') as f:
+    print f.read()
+#读取非ASCII编码的文本文件, 必须要二进制打开, 再解码
+import codecs
+with codecs.open('/usr/michael/gbk.txt', 'r', 'gbk') as f:
+    f.read() #u'\u6d4b\u8bd5'
+
+#文件写入同读取 'w' 'wb'->二进制
+
+#------------------------------------------------------
+#操作文件和目录
+#------------------------------------------------------
+#显示操作系统名称
+os.name #nt->Windows posix->Linux Unix Mac OS X
+#获取系统详细信息(非Windows)
+os.uname
+#环境变量
+os.environ #查看
+os.getenv('PATH') #获取
+#操作文件和目录
+import os.path
+#查看当前目录的绝对路径
+os.path.abspath('.')
+#当前目录下新建目录
+os.mkdir('./testdir')
+#删除目录
+os.rmdir('./testdir')
+
+#路径合成,不要直接拼接字符串, 可以正确处理不同操作系统的路径分隔符
+#不要求路径真实存在,仅是对字符串进行操作
+os.path.join('./part-1', 'part-2')
+#Linux/Unix/Mac
+part-1/part-2
+#Windows
+part-1\part-2
+#路径拆分
+os.path.split()
+#拆分路径, 后一部分总是最后级别的目录或文件名
+>>>os.path.split('Users/testdir/file.txt')
+('/Users/michael/testdir', 'file.txt')
+#可以直接得到文件扩展名
+>>>os.path.splitext('/path/to/file.txt')
+('/path/to/file', '.txt')
+
+#重命名
+os.rename('test.txt', 'test.py')
+#删除文件
+os.remove('test.py')
+#复制,不在os模块, 在shutil中
+import shutil
+shutil.copyfile(src, dst)
+
+#列出当前目录下的所有目录(利用Python的特性来过滤文件)
+x for x in os.listdir('.') if os.path.isdir(x)
+#列出所有.py文件
+x for x in os.listdir('.') if os.path.isfile(x) and os.path.splitext(x)[1]=='.py'
+
+#------------------------------------------------------
+#序列化
+#------------------------------------------------------
+#cPickle是C语言写的,速度快,pickle是纯Python写的
+#仅能用于Python
+try:
+    import cPickle as pickle
+except ImportError:
+    import pickle
+
+#把对象序列化为一个str
+d = dict()
+f = open('dump.txt', 'wb')
+pickle.dump(d, f)
+f.close()
+#反序列化
+f = open('dump.txt', 'rb')
+d = pickle.load(f)
+f.close()
+
+#JSON
+import json
+d = dict(name='Bob', age=20, score=88)
+json.dumps(d) #dumps返回一个str,内容是标准JSON
+#反序列化
+>>> json_str = '{"age": 20, "score": 88, "name": "Bob"}'
+>>> json.loads(json_str)
+{u'age': 20, u'score': 88, u'name': u'Bob'}
+#dumps,loads 针对字符串, dump load 针对file-like Object
+#反序列化得到的所有字符串对象默认都是unicode而不是str。由于JSON标准规定JSON编码是UTF-8，所以我们总是能正确地在Python的str或unicode与JSON的字符串之间转换。
+
+#------------------------------------------------------
+#多进程
+#multiprocessing
+#------------------------------------------------------
+
+#进程池
+#Pool
+from multiprocessing import Pool
+import os, time, random
+
+def long_time_task(name):
+    print 'Run task %s (%s)...' % (name, os.getpid())
+    start = time.time() #起始时间
+    time.sleep(random.random() * 3) #延时
+    end = time.time() #停止时间
+    #%0.2f 0->有效数字位数 .2->小数点后保留位数
+    print 'Task %s runs %0.2f seconds.' % (name, (end - start))
+
+if __name__ == '__main__':
+    print 'Parent process %s' % os.getpid()
+    p = Pool()
+    for i in range(5):
+        p.apply_async(long_time_task, args=(i,))
+    print 'Waiting for all subprocess done...'
+    p.close()
+    p.join()
+    print 'All subprocesses done.'
