@@ -605,3 +605,40 @@ if __name__ == '__main__':
     #对Pool对象调用join()方法会等待所有子进程执行完毕，调用join()之前必须先调用close()，调用close()之后就不能继续添加新的Process了
     p.join()
     print 'All subprocesses done.'
+
+#进程间通信
+#以Queue为例，父进程中创建两个子进程，一个往Queue里写数据，一个从Queue里读数据
+from multiprocessing import Process, Queue
+import os, time, random
+
+# 写数据进程执行的代码:
+def write(q):
+    for value in ['A', 'B', 'C']:
+        print 'Put %s to queue...' % value
+        q.put(value)
+        time.sleep(random.random())
+
+# 读数据进程执行的代码
+def read(q):
+    while True:
+        value = q.get(True)
+        print 'Get %s from queue.' % value
+
+if __name__ == '__main__':
+    # 父进程创建Queue, 并传给各个子进程:
+    q = Queue()
+    pw = Process(target=write, args=(q,))
+    pr = Process(target=read, args=(q,))
+    # 启动子进程pw, 写入:
+    pw.start()
+    # 启动子进程pr, 读取:
+    pr.start()
+    #等待pw结束:
+    pw.join()
+    #pr进程里是死循环，无法等待其结束，只能强行终止:
+    pr.terminate()
+
+#------------------------------------------------------
+#多线程
+#------------------------------------------------------
+#Python的标准库提供了两个模块：thread和threading，thread是低级模块，threading是高级模块，对thread进行了封装。绝大多数情况下，我们只需要使用threading这个高级模块。
