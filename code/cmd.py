@@ -642,3 +642,23 @@ if __name__ == '__main__':
 #多线程
 #------------------------------------------------------
 #Python的标准库提供了两个模块：thread和threading，thread是低级模块，threading是高级模块，对thread进行了封装。绝大多数情况下，我们只需要使用threading这个高级模块。
+import threading
+
+#多线程和多进程最大的不同在于，多进程中，同一个变量，各自有一份拷贝存在于每个进程中，互不影响，而多线程中，所有变量都由所有线程共享，所以，任何一个变量都可以被任何一个线程修改
+#Lock
+balance = 0
+lock = threading.Lock()
+
+def run_thread(n):
+    for i in range(100000):
+        # 先要获取锁:
+        lock.acquire()
+        try:
+            # 放心地改吧:
+            change_it(n)
+        finally:
+            # 改完了一定要释放锁:
+            lock.release()
+
+#Python解释器由于设计时有GIL全局锁，导致了多线程无法利用多核。
+#但可以通过多进程实现多核任务。多个Python进程有各自独立的GIL锁，互不影响。
