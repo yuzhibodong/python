@@ -595,10 +595,143 @@ def long_time_task(name):
 
 if __name__ == '__main__':
     print 'Parent process %s' % os.getpid()
+    #Pool默认大小CPU的核数
+    #p = Pool(5) 可修改
     p = Pool()
     for i in range(5):
         p.apply_async(long_time_task, args=(i,))
     print 'Waiting for all subprocess done...'
     p.close()
+    #对Pool对象调用join()方法会等待所有子进程执行完毕，调用join()之前必须先调用close()，调用close()之后就不能继续添加新的Process了
     p.join()
     print 'All subprocesses done.'
+
+#进程间通信
+#以Queue为例，父进程中创建两个子进程，一个往Queue里写数据，一个从Queue里读数据
+from multiprocessing import Process, Queue
+import os, time, random
+
+# 写数据进程执行的代码:
+def write(q):
+    for value in ['A', 'B', 'C']:
+        print 'Put %s to queue...' % value
+        q.put(value)
+        time.sleep(random.random())
+
+# 读数据进程执行的代码
+def read(q):
+    while True:
+        value = q.get(True)
+        print 'Get %s from queue.' % value
+
+if __name__ == '__main__':
+    # 父进程创建Queue, 并传给各个子进程:
+    q = Queue()
+    pw = Process(target=write, args=(q,))
+    pr = Process(target=read, args=(q,))
+    # 启动子进程pw, 写入:
+    pw.start()
+    # 启动子进程pr, 读取:
+    pr.start()
+    #等待pw结束:
+    pw.join()
+    #pr进程里是死循环，无法等待其结束，只能强行终止:
+    pr.terminate()
+
+#------------------------------------------------------
+#多线程
+#------------------------------------------------------
+#Python的标准库提供了两个模块：thread和threading，thread是低级模块，threading是高级模块，对thread进行了封装。绝大多数情况下，我们只需要使用threading这个高级模块。
+import threading
+
+#多线程和多进程最大的不同在于，多进程中，同一个变量，各自有一份拷贝存在于每个进程中，互不影响，而多线程中，所有变量都由所有线程共享，所以，任何一个变量都可以被任何一个线程修改
+#Lock
+balance = 0
+lock = threading.Lock()
+
+def run_thread(n):
+    for i in range(100000):
+        # 先要获取锁:
+        lock.acquire()
+        try:
+            # 放心地改吧:
+            change_it(n)
+        finally:
+            # 改完了一定要释放锁:
+            lock.release()
+
+#Python解释器由于设计时有GIL全局锁，导致了多线程无法利用多核。
+#但可以通过多进程实现多核任务。多个Python进程有各自独立的GIL锁，互不影响。
+
+#ThreadLocal
+#常用于为每个线程绑定一个数据库连接,HTTP请求,用户身份信息等
+import threading
+
+#创建全局ThreadLocal对象:
+local_school = threading.local()
+
+def process_student():
+    print 'Hello, %s (in %s)' % (local_school.student, threading.current_thread().name)
+
+def process_thread(name):
+    #绑定ThreadLocal的student
+    local_school.student = name
+    process_student()
+
+t1 = threading.Thread(target=process_thread, args=('Alice',), name='Thread-A')
+t2 = threading.Thread(target=process_thread, args=('Bob',), name='Thread-B')
+t1.start()
+t2.start()
+t1.join()
+t2.join()
+
+#------------------------------------------------------
+#分布式进程
+#------------------------------------------------------
+#见distributed process
+
+#------------------------------------------------------
+#正则表达式
+#------------------------------------------------------
+
+#应用 切分字符串
+>>>re.split(r'[\s\,\;]+', 'a,b;; c  d')
+['a', 'b', 'c', 'd']
+
+#分组
+#用()表示要提取的分组
+>>> m = re.match(r'^(\d{3})-(\d{3,8})$', '010-12345')
+>>> m
+<_sre.SRE_Match object at 0x1026fb3e8>
+>>> m.group(0)
+'010-12345'
+>>> m.group(1)
+'010'
+>>> m.group(2)
+'12345'
+
+#编译
+#如果一个正则表达式要重复使用, 出于效率考虑, 可以预编译
+>>> import re
+# 编译:
+>>> re_telephone = re.compile(r'^(\d{3})-(\d{3,8})$')
+# 使用：
+>>> re_telephone.match('010-12345').groups()
+('010', '12345')
+>>> re_telephone.match('010-8086').groups()
+('010', '8086')
+
+#------------------------------------------------------
+#collections
+#Python内建的一个集合模块，提供了许多有用的集合类
+#------------------------------------------------------
+
+#namedtuple
+#创建自定义的tuple对象，规定tuple元素的个数，可用属性来引用tuple的某个元素
+>>> from collections import namedtuple
+>>> Point = namedtuple('Point', ['x', 'y'])
+>>> p = Point(1, 2)
+>>> p.x
+1
+>>> p.y
+2

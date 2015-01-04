@@ -1,7 +1,7 @@
 # -*- coding:utf-8 -*-
-def prod(*s):
-    return reduce(lambda x,y:x+y,s)
+from collections import namedtuple
 
-l = [1,2,3,4]
-
-print prod(l)
+Point = namedtuple('Point', ['x', 'y'])
+p = Point(1, 2)
+print p.x
+print p.y
