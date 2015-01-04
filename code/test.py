@@ -1,5 +1,7 @@
 # -*- coding:utf-8 -*-
-import re
+from collections import namedtuple
 
-l = re.split(r'[\s\,\;]+', 'a,b;; c  d')
-print l
+Point = namedtuple('Point', ['x', 'y'])
+p = Point(1, 2)
+print p.x
+print p.y

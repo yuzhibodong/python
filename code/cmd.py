@@ -720,3 +720,18 @@ t2.join()
 ('010', '12345')
 >>> re_telephone.match('010-8086').groups()
 ('010', '8086')
+
+#------------------------------------------------------
+#collections
+#Python内建的一个集合模块，提供了许多有用的集合类
+#------------------------------------------------------
+
+#namedtuple
+#创建自定义的tuple对象，规定tuple元素的个数，可用属性来引用tuple的某个元素
+>>> from collections import namedtuple
+>>> Point = namedtuple('Point', ['x', 'y'])
+>>> p = Point(1, 2)
+>>> p.x
+1
+>>> p.y
+2
