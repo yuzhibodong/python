@@ -735,3 +735,70 @@ t2.join()
 1
 >>> p.y
 2
+
+#deque
+#双向队列
+>>> from collections import deque
+>>> q = deque(['a', 'b', 'c'])
+>>> q.append('x')
+>>> q.appendleft('y')
+>>> q
+deque(['y', 'a', 'b', 'c', 'x'])
+q.popleft()
+
+#defaultdict
+#使用dict， key不存在， 抛出KeyError， 使用defaultdict, 返回一个默认值
+>>> from collections import defaultdict
+>>> dd = defaultdict(lambda: 'N/A')
+>>> dd['key1'] = 'abc'
+>>> dd['key1'] # key1存在
+'abc'
+>>> dd['key2'] # key2不存在，返回默认值
+'N/A'
+
+#OrderedDict
+#dict, Key是无序的， OrderedDict保持Key的顺序
+#OrderedDict的Key按照 插入顺序 排列
+#可以实现FIFO
+>>> from collections import OrderedDict
+>>> d = dict([('a', 1), ('b', 2), ('c', 3)])
+>>> d # dict的Key是无序的
+{'a': 1, 'c': 3, 'b': 2}
+>>> od = OrderedDict([('a', 1), ('b', 2), ('c', 3)])
+>>> od # OrderedDict的Key是有序的
+OrderedDict([('a', 1), ('b', 2), ('c', 3)])
+#可以实现FIFO
+from collections import OrderedDict
+
+class LastUpdatedOrderedDict(OrderedDict):
+
+    def __init__(self, capacity):
+        super(LastUpdatedOrderedDict, self).__init__()
+        self._capacity = capacity
+
+    def __setitem__(self, key, value):
+        containsKey = 1 if key in self else 0
+        if len(self) - containsKey >= self._capacity:
+            last = self.popitem(last=False)
+            print 'remove:', last
+        if containsKey:
+            del self[key]
+            print 'set:', (key, value)
+        else:
+            print 'add:', (key, value)
+        OrderedDict.__setitem__(self, key, value)
+
+#Counter
+#计数器
+>>> from collections import Counter
+>>> c = Counter()
+>>> for ch in 'programming':
+...     c[ch] = c[ch] + 1
+...
+>>> c
+Counter({'g': 2, 'm': 2, 'r': 2, 'a': 1, 'i': 1, 'o': 1, 'n': 1, 'p': 1})
+
+#------------------------------------------------------
+#base64
+#用64个字符来表示任意二进制数据的方法
+#------------------------------------------------------
