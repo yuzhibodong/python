@@ -1,26 +1,29 @@
 #!/usr/bin/env python
 # -*- coding:utf-8 -*-
-import hashlib
+from Tkinter import *
+import tkMessageBox
 
-def get_md5(password):
-    md5 = hashlib.md5()
-    md5.update(password)
-    return md5.hexdigest()
+class Application(Frame):
+    """docstring for Application"""
+    def __init__(self, master=None):
+        Frame.__init__(self, master)
+        self.pack()
+        self.createWidgets()
 
-db = {}
+    def createWidgets(self):
+        self.helloLabel = Label(self, text='Hello, world!')
+        self.helloLabel.pack()
+        self.nameInput = Entry(self)
+        self.nameInput.pack()
+        self.quitButton = Button(self, text='Hello', command=self.hello)
+        self.quitButton.pack()
 
-def register(username, password):
-    db[username] = get_md5(password + username + 'the-Salt')
+    def hello(self):
+        name = self.nameInput.get() or 'world'
+        tkMessageBox.showinfo('Message', 'Hello, %s' % name)
 
-def login(username, password):
-    pwd_md5 = get_md5(password + username + 'the-Salt')
-    if db[username] == pwd_md5:
-        print True
-    else:
-        print False
+app = Application()
 
-username = raw_input('input your name:')
-password = raw_input('input your password:')
+app.master.title('Hello World')
 
-register(username, password)
-login(username, password)
+app.mainloop()

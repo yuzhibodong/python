@@ -225,6 +225,13 @@ def str2int(s):
     return reduce(lambda x,y: x*10+y, map(char2num, s))
 
 #------------------------------------------------------
+#匿名函数
+#lambda
+#------------------------------------------------------
+#参数x, y  返回x+y的值
+lambda x,y: x+y
+
+#------------------------------------------------------
 #闭包(closure)
 #难点 仍未完全理解
 #------------------------------------------------------
@@ -843,3 +850,69 @@ def b64de(s):
 b64de('YWJjZA')
 b64de('YWJjZA=')
 b64de('YWJjZA==')
+
+#------------------------------------------------------
+#hashlib
+#摘要算法
+#------------------------------------------------------
+#对任意长度的数据data计算出固定长度的摘要digest,目的是为了发现原始数据是否被人篡改过
+#由于常用的MD5值很容易被计算出来, 所以, 要确保存储的用户口令不是已被计算出来的常用口令的MD5,需要对原始口令加一个复杂字符串来实现,俗称"加盐"
+
+#Ex 根据用户输入注册并登陆验证
+#!/usr/bin/env python
+# -*- coding:utf-8 -*-
+import hashlib
+
+def get_md5(password):
+    md5 = hashlib.md5()
+    md5.update(password)
+    return md5.hexdigest()
+
+db = {}
+
+def register(username, password):
+    db[username] = get_md5(password + username + 'the-Salt')
+
+def login(username, password):
+    pwd_md5 = get_md5(password + username + 'the-Salt')
+    if db[username] == pwd_md5:
+        print True
+    else:
+        print False
+
+username = raw_input('input your name:')
+password = raw_input('input your password:')
+
+register(username, password)
+login(username, password)
+
+#------------------------------------------------------
+#GUI
+#图形界面
+#------------------------------------------------------
+#Tkinter
+from Tkinter import *
+import tkMessageBox
+
+class Application(Frame):
+    """docstring for Application"""
+    def __init__(self, master=None):
+        Frame.__init__(self, master)
+        self.pack()
+        self.createWidgets()
+
+    def createWidgets(self):
+        self.helloLabel = Label(self, text='Hello, world!')
+        self.helloLabel.pack()
+        self.nameInput = Entry(self)
+        self.nameInput.pack()
+        self.quitButton = Button(self, text='Hello', command=self.hello)
+        self.quitButton.pack()
+
+    def hello(self):
+        name = self.nameInput.get() or 'world'
+        tkMessageBox.showinfo('Message', 'Hello, %s' % name)
+
+app = Application()
+app.master.title('Hello World')
+app.mainloop()
