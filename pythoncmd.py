@@ -1,6 +1,24 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+#类执行顺序
+#从上向下执行, 定义需要放前面
+#或者采取如下格式, 就可以把代码放最上面了
+def main():
+    ...
+def other_functions():
+    ...
+if __name__ == '__main__':
+    main()
+
+#---------------------
+#字符串
+#---------------------
+#字符串长度
+len('string')
+#字符串拼接 +号
+
+
 #---------------------
 #数据类型和变量
 #---------------------
@@ -215,6 +233,13 @@ def char2num(s):
 
 def str2int(s):
     return reduce(lambda x,y: x*10+y, map(char2num, s))
+
+#------------------------------------------------------
+#匿名函数
+#lambda
+#------------------------------------------------------
+#参数x, y  返回x+y的值
+lambda x,y: x+y
 
 #------------------------------------------------------
 #闭包(closure)
@@ -735,3 +760,210 @@ t2.join()
 1
 >>> p.y
 2
+
+#deque
+#双向队列
+>>> from collections import deque
+>>> q = deque(['a', 'b', 'c'])
+>>> q.append('x')
+>>> q.appendleft('y')
+>>> q
+deque(['y', 'a', 'b', 'c', 'x'])
+q.popleft()
+
+#defaultdict
+#使用dict， key不存在， 抛出KeyError， 使用defaultdict, 返回一个默认值
+>>> from collections import defaultdict
+>>> dd = defaultdict(lambda: 'N/A')
+>>> dd['key1'] = 'abc'
+>>> dd['key1'] # key1存在
+'abc'
+>>> dd['key2'] # key2不存在，返回默认值
+'N/A'
+
+#OrderedDict
+#dict, Key是无序的， OrderedDict保持Key的顺序
+#OrderedDict的Key按照 插入顺序 排列
+#可以实现FIFO
+>>> from collections import OrderedDict
+>>> d = dict([('a', 1), ('b', 2), ('c', 3)])
+>>> d # dict的Key是无序的
+{'a': 1, 'c': 3, 'b': 2}
+>>> od = OrderedDict([('a', 1), ('b', 2), ('c', 3)])
+>>> od # OrderedDict的Key是有序的
+OrderedDict([('a', 1), ('b', 2), ('c', 3)])
+#可以实现FIFO
+from collections import OrderedDict
+
+class LastUpdatedOrderedDict(OrderedDict):
+
+    def __init__(self, capacity):
+        super(LastUpdatedOrderedDict, self).__init__()
+        self._capacity = capacity
+
+    def __setitem__(self, key, value):
+        containsKey = 1 if key in self else 0
+        if len(self) - containsKey >= self._capacity:
+            last = self.popitem(last=False)
+            print 'remove:', last
+        if containsKey:
+            del self[key]
+            print 'set:', (key, value)
+        else:
+            print 'add:', (key, value)
+        OrderedDict.__setitem__(self, key, value)
+
+#Counter
+#计数器
+>>> from collections import Counter
+>>> c = Counter()
+>>> for ch in 'programming':
+...     c[ch] = c[ch] + 1
+...
+>>> c
+Counter({'g': 2, 'm': 2, 'r': 2, 'a': 1, 'i': 1, 'o': 1, 'n': 1, 'p': 1})
+
+#------------------------------------------------------
+#base64
+#用64个字符来表示任意二进制数据的方法
+#------------------------------------------------------
+#原理
+#准备一个包含64个字符的数组
+['A', 'B', 'C', ... 'a', 'b', 'c', ... '0', '1', ... '+', '/']
+对二进制数据处理，每3个字节一组， 一共是3x8=24bit， 划分为4组，每组6bit
+
+b1       b2       b3
+11111111 11111111 11111111
+111111 111111 111111 111111
+n1      n2      n3      n4
+得到4个数字为索引，查表，得到4个字符，就是编码后的字符串
+
+#特性
+3字节二进制数据编码为4字节的文本，长度增加33%，但编码后的文本数据可以直接在页面显示
+#补齐
+当要编码的二进制数据不是3的倍数，出现剩下1个或2个字节。Base64用\x00字节在末尾补足,再在编码的末尾加上1或2个=号,表示补了多少字节,解码时,自动去掉
+
+#标准Base64编码后可能出现+和/, 在URL中就不能直接作为参数
+#url safe把 + 和 / 换为 - 和 _
+
+#=号
+#=在URL Cookie中会造成歧义, 很多Base64编码后会去掉=, 但Base64编码长度永远是4的倍数, 所以解码是补足缺少位数即可
+import base64
+
+def b64de(s):
+    lack = len(s)%4
+    print lack
+    s += '=' * lack
+    print s
+    print base64.b64decode(s)
+
+b64de('YWJjZA')
+b64de('YWJjZA=')
+b64de('YWJjZA==')
+
+#------------------------------------------------------
+#hashlib
+#摘要算法
+#------------------------------------------------------
+#对任意长度的数据data计算出固定长度的摘要digest,目的是为了发现原始数据是否被人篡改过
+#由于常用的MD5值很容易被计算出来, 所以, 要确保存储的用户口令不是已被计算出来的常用口令的MD5,需要对原始口令加一个复杂字符串来实现,俗称"加盐"
+
+#Ex 根据用户输入注册并登陆验证
+#!/usr/bin/env python
+# -*- coding:utf-8 -*-
+import hashlib
+
+def get_md5(password):
+    md5 = hashlib.md5()
+    md5.update(password)
+    return md5.hexdigest()
+
+db = {}
+
+def register(username, password):
+    db[username] = get_md5(password + username + 'the-Salt')
+
+def login(username, password):
+    pwd_md5 = get_md5(password + username + 'the-Salt')
+    if db[username] == pwd_md5:
+        print True
+    else:
+        print False
+
+username = raw_input('input your name:')
+password = raw_input('input your password:')
+
+register(username, password)
+login(username, password)
+
+#------------------------------------------------------
+#GUI
+#图形界面
+#------------------------------------------------------
+#Tkinter
+from Tkinter import *
+import tkMessageBox
+
+class Application(Frame):
+    """docstring for Application"""
+    def __init__(self, master=None):
+        Frame.__init__(self, master)
+        self.pack()
+        self.createWidgets()
+
+    def createWidgets(self):
+        self.helloLabel = Label(self, text='Hello, world!')
+        self.helloLabel.pack()
+        self.nameInput = Entry(self)
+        self.nameInput.pack()
+        self.quitButton = Button(self, text='Hello', command=self.hello)
+        self.quitButton.pack()
+
+    def hello(self):
+        name = self.nameInput.get() or 'world'
+        tkMessageBox.showinfo('Message', 'Hello, %s' % name)
+
+app = Application()
+app.master.title('Hello World')
+app.mainloop()
+
+#------------------------------------------------------
+#TCP编程
+#------------------------------------------------------
+#另见code/socket/
+
+#socket访问新浪首页
+
+#!/usr/bin/env python
+# -*- coding:utf-8 -*-
+import socket
+
+# AF_INET指定使用IPv4协议, AF_INET6->IPv6
+# SOCK_STREAM指定使用面向流的TCP协议
+# 创建一个socket
+s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+# 建立连接 参数是一个tuple
+s.connect(('www.sina.com.cn', 80))
+
+# 发送数据:
+s.send('GET / HTTP/1.1\r\nHost: www.sina.com.cn\r\nConnetion: close\r\n\r\n')
+
+# 接收数据:
+buffer = []
+while True:
+    # 每次最多接收1k字节:
+    d = s.recv(1024)
+    if d:
+        buffer.append(d)
+    else:
+        break
+data = ''.join(buffer)
+
+# 关闭连接:
+s.close()
+
+header, html = data.split('\r\n\r\n', 1)
+print header
+# 把接收的数据写入文件:
+with open('sina.html', 'wb') as f:
+    f.write(html)
