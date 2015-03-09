@@ -11,6 +11,9 @@ def other_functions():
 if __name__ == '__main__':
     main()
 
+#判断变量是否为某类型
+isinstance(s, string)
+
 #---------------------
 #字符串
 #---------------------
