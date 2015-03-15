@@ -970,3 +970,17 @@ print header
 # 把接收的数据写入文件:
 with open('sina.html', 'wb') as f:
     f.write(html)
+
+#------------------------------------------------------
+# SMTP发送邮件
+# 见/email/
+#------------------------------------------------------
+# 参考https://docs.python.org/2/library/email.mime.html
+# 构造一个邮件对象就是一个Message对象, 如果构造一个MIMEText对象, 就是文本邮件对象, 如果构造一个MIMEImage对象, 就表示一个作为附件的图片, 多个对象组合, 使用MIMEMultipart对象, 而MIMEBase可以表示任何对象. 它们的继承关系如下
+Message
++- MIMEBase
+    +- MIMEMultipart
+    +- MIMENonMultipart
+        +- MIMEMessage
+        +- MIMEText
+        +- MIMEImage
