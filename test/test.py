@@ -1,33 +1,39 @@
 #!/usr/bin/env python
 # -*- coding:utf-8 -*-
 
-from email import encoders
-from email.header import Header
-from email.utils import parseaddr, formataddr
-from email.mime.text import MIMEText
-import smtplib
-import pdb
+import poplib
+import email
+from email.parser import Parser
 
-#格式化邮件地址, 如果邮件地址包含中文, 需要通过Header对象进行编码
-def _format_addr(s):
-    name, addr = parseaddr(s)
-    #isinstance 判断变量是否为某个类型
-    return formataddr((Header(name, 'utf-8').encode(), addr.encode('utf-8') if isinstance(addr, unicode) else addr))
-
-from_addr = 'j5088794@163.com'
+# 输入邮件地址 口令 和 POP3服务器地址
+email = 'j5088794@163.com'
 password = 'jhb5088794'
-to_addr = '357892250@qq.com'
-smtp_server = 'smtp.163.com'
+pop3_server = 'pop3.163.com'
 
-msg = MIMEText('hello, send by Python', _subtype='plain', _charset='utf-8')
-pdb.set_trace()
-msg['From'] = _format_addr(u'Python爱好者 <%s>' % from_addr)
-# msg['To'] 接收的是字符串而不是list, 如果有多个地址 用,分隔即可
-msg['To'] = _format_addr(u'管理员 <%s>' % to_addr)
-msg['Subject'] = Header(u'来着SMTP的问候...', 'utf-8').encode()
-
-server = smtplib.SMTP(host=smtp_server, port=25)
-server.set_debuglevel(1)
-server.login(from_addr, password)
-server.sendmail(from_addr, to_addr, msg.as_string())
+# 连接到POP3服务器:
+server = poplib.POP3(pop3_server)
+# 可以打开或关闭调试信息:
+# server.set_debuglevel(1)
+# 可选: 打印POP3服务器的欢迎文字:
+print(server.getwelcome())
+# 身份认证:
+server.user(email)
+server.pass_(password)
+# stat()返回邮件数量和占用空间:
+print('Messages: %s. Size: %s' % server.stat())
+# list()返回所有邮件的编号:
+resp, mails, octets = server.list()
+# 可以查看返回的列表类似['1 82923', '2 2184', ...]
+print(mails)
+# 获取最新一封邮件, 注意索引号从1开始:
+index = len(mails)
+resp, lines, octets = server.retr(index)
+# lines存储了邮件的原始文本的每一行,
+# 可以获得整个邮件的原始文本:
+msg_content = '\r\n'.join(lines)
+# 稍后解析出邮件:
+msg = Parser().parsestr(msg_content)
+# 可以根据邮件索引号直接从服务器删除邮件:
+# server.dele(index)
+# 关闭连接:
 server.quit()
