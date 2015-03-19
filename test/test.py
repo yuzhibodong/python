@@ -6,9 +6,9 @@ import email
 from email.parser import Parser
 
 # 输入邮件地址 口令 和 POP3服务器地址
-email = 'j5088794@163.com'
+email = '357892250@qq.com'
 password = 'jhb5088794'
-pop3_server = 'pop3.163.com'
+pop3_server = 'pop.qq.com'
 
 # 连接到POP3服务器:
 server = poplib.POP3(pop3_server)
