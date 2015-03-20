@@ -10,6 +10,10 @@ def other_functions():
     ...
 if __name__ == '__main__':
     main()
+# 上面if格式最主要作用是当前.py文件如果执行, __name__为__main__
+# 此时执行程序, 当被import时, __name__为文件名, 此时就不执行了
+http://stackoverflow.com/questions/419163/what-does-if-name-main-do
+http://www.cnblogs.com/xuxm2007/archive/2010/08/04/1792463.html#undefined
 
 #判断变量是否为某类型
 isinstance(s, string)
