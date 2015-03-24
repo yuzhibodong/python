@@ -85,14 +85,14 @@ resp, mails, octets = server.list()
 # 可以查看返回的列表类似['1 82923', '2 2184', ...]
 print(mails)
 # 获取最新一封邮件, 注意索引号从1开始:
-index = len(mails)
-resp, lines, octets = server.retr(index)
+resp, lines, octets = server.retr(len(mails))
 # lines存储了邮件的原始文本的每一行,
 # 可以获得整个邮件的原始文本:
 msg_content = '\r\n'.join(lines)
 # 稍后解析出邮件:
 msg = Parser().parsestr(msg_content)
-
+# 打印邮件内容
+print_info(msg, indent=0)
 # 可以根据邮件索引号直接从服务器删除邮件:
 # server.dele(index)
 # 关闭连接:

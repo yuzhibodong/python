@@ -18,6 +18,10 @@ http://www.cnblogs.com/xuxm2007/archive/2010/08/04/1792463.html#undefined
 #判断变量是否为某类型
 isinstance(s, string)
 
+# 回车换行
+\n 10 \x0a newline 换行
+\r 13 \x0d return 回车
+
 #---------------------
 #字符串
 #---------------------
