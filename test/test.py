@@ -1,23 +1,22 @@
 #!/usr/bin/env python
 # -*- coding:utf-8 -*-
 
-import sqlite3
+import mysql.connector
 
-conn = sqlite3.connect('test.db')
+conn = mysql.connector.connect(user='root', password='5088794', database='test', use_unicode=True)
 
 cursor = conn.cursor()
 
-#cursor.execute('create table user (id varchar(20) primary key, name varchar(20))')
+cursor.execute('create table user (id varchar(20) primary key, name varchar(20))')
+cursor.execute('insert into user (idn name) values (%s, %s)', ['1', 'Michael'])
+cursor.rowcount
 
-#cursor.execute('insert into user (id, name) values (\'1\', \'Michael\')')
 conn.commit()
+cursor.close()
 
-cursor.execute('select * from user where id=?', '1')
-
+cursor = conn.cursor()
+cursor.execute('select * from user where id = %s', '1')
 values = cursor.fetchall()
-
-values
-
+print values
 cursor.close()
 conn.close()
-
