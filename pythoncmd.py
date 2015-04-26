@@ -1,6 +1,9 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+# 查看帮助文档
+pydoc function_or_module
+
 #类执行顺序
 #从上向下执行, 定义需要放前面
 #或者采取如下格式, 就可以把代码放最上面了

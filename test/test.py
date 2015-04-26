@@ -1,22 +1,25 @@
 #!/usr/bin/env python
 # -*- coding:utf-8 -*-
 
-import mysql.connector
+# 导入:
+from sqlalchemy import Column, String, create_engine
+from sqlalchemy.orm import sessionmaker
+from sqlalchemy.ext.declarative import declarative_base
 
-conn = mysql.connector.connect(user='root', password='', database='test', use_unicode=True)
+# 创建对象的基类:
+Base = declarative_base()
 
-cursor = conn.cursor()
+# 定义User对象:
+class User(Base):
+    """docstring for User"""
+    # 表的名字:
+    __tablename__ = 'user'
 
-cursor.execute('create table user (id varchar(20) primary key, name varchar(20))')
-cursor.execute('insert into user (id, name) values (%s, %s)', ['1', 'Michael'])
-cursor.rowcount
+    # 表的结构:
+    id = Column(String(20), primary_key=True)
+    name = Column(String(20))
 
-conn.commit()
-cursor.close()
-
-cursor = conn.cursor()
-cursor.execute('select * from user where id = %s', '1')
-values = cursor.fetchall()
-print values
-cursor.close()
-conn.close()
+# 初始化数据库连接:
+engine = create_engine('mysql+mysqlconnector://root:password@localhost:3306/test')
+# 创建DBSession类型:
+DBSession = sessionmaker(bind=engine)
