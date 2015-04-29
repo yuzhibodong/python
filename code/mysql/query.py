@@ -45,3 +45,20 @@ print 'type:', type(user)
 print 'name:', user.name
 # 关闭Session
 session.close()
+
+## 定义一对多关系
+#class User(Base):
+#    __tablename__ = 'user'
+#    
+#    id = Column(String(20), primary_key=True)
+#    name = Column(String(20))
+#    # 一对多:
+#    books = relationship('Book')
+#
+#class Book(Base):
+#    __tablename__ = 'book'
+#    
+#    id = Column(String(20), primary_key=True)
+#    name = Column(String(20))
+#    # "多"的一方的book表是通过外键关联到user表的:
+#    user_id = Column(String(20), ForeignKey('User.id'))
