@@ -26,22 +26,13 @@ engine = create_engine('mysql+mysqlconnector://root:5088794@localhost:3306/test'
 # 创建DBSession类型:
 DBSession = sessionmaker(bind=engine)
 
-# # 创建session对象:
-# session = DBSession()
-# # 创建新User对象:
-# new_user = User(id='5', name='Bob')
-# # 添加到session
-# session.add(new_user)
-# # 提交即报错到数据库:
-# session.commit()
-# # 关闭session
-# session.close()
-
+# 创建session对象:
 session = DBSession()
-# 创建Query查询, filter是where条件, 最后调用one()返回唯一行, 如果调用all()则返回所有行:
-user = session.query(User).filter(User.id=='5').one()
-# 打印类型和对象的name属性:
-print 'type:', type(user)
-print 'name:', user.name
-# 关闭Session
+# 创建新User对象:
+new_user = User(id='5', name='Bob')
+# 添加到session
+session.add(new_user)
+# 提交即报错到数据库:
+session.commit()
+# 关闭session
 session.close()
