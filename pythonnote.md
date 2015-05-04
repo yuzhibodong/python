@@ -121,7 +121,7 @@ if x:
 ```
 
 
-##字典
+## 字典
 请务必注意，dict内部存放的顺序和key放入的顺序是没有关系的。
 
 **init**
@@ -284,7 +284,7 @@ def str2int(s):
 难点 仍未完全理解
 
 **sum可以直接使用args, 且返回函数本身**
-##高阶函数
+## 高阶函数
 map/reduce
 
 **map 序列依次代入第一个函数**
@@ -299,7 +299,7 @@ def lazy_sum(*args):
     return sum
 ```
 
-##偏函数
+## 偏函数
 给函数设定默认参数并生成新函数
 
 `import functools`
@@ -477,13 +477,13 @@ https://docs.python.org/2/library/exceptions.html#exception-hierarchy
 ``` python
 try:
     pass
-#捕获异常,处理后跳转finally
+# 捕获异常,处理后跳转finally
 except Exception, e:
     raise
-#如果没有捕获错误, 则会执行else
+# 如果没有捕获错误, 则会执行else
 else:
     pass
-#可没有, 如果存在finally, 则一定会执行
+# 可没有, 如果存在finally, 则一定会执行
 finally:
     pass
 ```
@@ -655,34 +655,43 @@ try:
 except ImportError:
     import pickle
 ```
-#把对象序列化为一个str
+把对象序列化为一个str
+``` python
 d = dict()
 f = open('dump.txt', 'wb')
 pickle.dump(d, f)
 f.close()
-#反序列化
+```
+
+## 反序列化
+``` python
 f = open('dump.txt', 'rb')
 d = pickle.load(f)
 f.close()
+```
 
-#JSON
+## JSON
+``` python
 import json
 d = dict(name='Bob', age=20, score=88)
 json.dumps(d) #dumps返回一个str,内容是标准JSON
-#反序列化
+```
+## 反序列化
+```
 >>> json_str = '{"age": 20, "score": 88, "name": "Bob"}'
 >>> json.loads(json_str)
 {u'age': 20, u'score': 88, u'name': u'Bob'}
-#dumps,loads 针对字符串, dump load 针对file-like Object
-#反序列化得到的所有字符串对象默认都是unicode而不是str。由于JSON标准规定JSON编码是UTF-8，所以我们总是能正确地在Python的str或unicode与JSON的字符串之间转换。
+```
+dumps,loads 针对字符串, dump load 针对file-like Object
+反序列化得到的所有字符串对象默认都是unicode而不是str。由于JSON标准规定JSON编码是UTF-8，所以我们总是能正确地在Python的str或unicode与JSON的字符串之间转换。
 
 
-#多进程
-#multiprocessing
+## 多进程
+`multiprocessing`
 
 
-#进程池
-#Pool
+## 进程池(Pool)
+``` python
 from multiprocessing import Pool
 import os, time, random
 
@@ -706,20 +715,27 @@ if __name__ == '__main__':
     #对Pool对象调用join()方法会等待所有子进程执行完毕，调用join()之前必须先调用close()，调用close()之后就不能继续添加新的Process了
     p.join()
     print 'All subprocesses done.'
+```
 
-#进程间通信
-#以Queue为例，父进程中创建两个子进程，一个往Queue里写数据，一个从Queue里读数据
+## 进程间通信
+以Queue为例，父进程中创建两个子进程，一个往Queue里写数据，一个从Queue里读数据
+
+``` python
 from multiprocessing import Process, Queue
 import os, time, random
+```
 
-# 写数据进程执行的代码:
+## 写数据进程执行的代码:
+``` python
 def write(q):
     for value in ['A', 'B', 'C']:
         print 'Put %s to queue...' % value
         q.put(value)
         time.sleep(random.random())
+```
 
 # 读数据进程执行的代码
+``` python
 def read(q):
     while True:
         value = q.get(True)
@@ -738,15 +754,17 @@ if __name__ == '__main__':
     pw.join()
     #pr进程里是死循环，无法等待其结束，只能强行终止:
     pr.terminate()
+```
 
+## 多线程
 
-#多线程
+Python的标准库提供了两个模块：thread和threading，thread是低级模块，threading是高级模块，对thread进行了封装。绝大多数情况下，我们只需要使用threading这个高级模块。
+`import threading`
 
-#Python的标准库提供了两个模块：thread和threading，thread是低级模块，threading是高级模块，对thread进行了封装。绝大多数情况下，我们只需要使用threading这个高级模块。
-import threading
+多线程和多进程最大的不同在于，多进程中，同一个变量，各自有一份拷贝存在于每个进程中，互不影响，而多线程中，所有变量都由所有线程共享，所以，任何一个变量都可以被任何一个线程修改
+**Lock**
 
-#多线程和多进程最大的不同在于，多进程中，同一个变量，各自有一份拷贝存在于每个进程中，互不影响，而多线程中，所有变量都由所有线程共享，所以，任何一个变量都可以被任何一个线程修改
-#Lock
+``` python
 balance = 0
 lock = threading.Lock()
 
@@ -760,17 +778,19 @@ def run_thread(n):
         finally:
             # 改完了一定要释放锁:
             lock.release()
+```
 
-#Python解释器由于设计时有GIL全局锁，导致了多线程无法利用多核。
-#但可以通过多进程实现多核任务。多个Python进程有各自独立的GIL锁，互不影响。
+Python解释器由于设计时有GIL全局锁，导致了多线程无法利用多核。
+但可以通过多进程实现多核任务。多个Python进程有各自独立的GIL锁，互不影响。
 
-#ThreadLocal
-#常用于为每个线程绑定一个数据库连接,HTTP请求,用户身份信息等
-import threading
+## ThreadLocal
+常用于为每个线程绑定一个数据库连接,HTTP请求,用户身份信息等
+`import threading`
 
-#创建全局ThreadLocal对象:
-local_school = threading.local()
+创建全局ThreadLocal对象:
+`local_school = threading.local()`
 
+``` python
 def process_student():
     print 'Hello, %s (in %s)' % (local_school.student, threading.current_thread().name)
 
@@ -785,22 +805,26 @@ t1.start()
 t2.start()
 t1.join()
 t2.join()
+```
+
+## 分布式进程
+
+见`distributed process`
 
 
-#分布式进程
-
-#见distributed process
+## 正则表达式
 
 
-#正则表达式
+应用 切分字符串
 
-
-#应用 切分字符串
+```
 >>>re.split(r'[\s\,\;]+', 'a,b;; c  d')
 ['a', 'b', 'c', 'd']
+```
+## 分组
+用()表示要提取的分组
 
-#分组
-#用()表示要提取的分组
+```
 >>> m = re.match(r'^(\d{3})-(\d{3,8})$', '010-12345')
 >>> m
 <_sre.SRE_Match object at 0x1026fb3e8>
@@ -810,25 +834,30 @@ t2.join()
 '010'
 >>> m.group(2)
 '12345'
+```
 
-#编译
-#如果一个正则表达式要重复使用, 出于效率考虑, 可以预编译
->>> import re
-# 编译:
->>> re_telephone = re.compile(r'^(\d{3})-(\d{3,8})$')
-# 使用：
+## 编译
+如果一个正则表达式要重复使用, 出于效率考虑, 可以预编译
+`>>> import re`
+编译:
+`>>> re_telephone = re.compile(r'^(\d{3})-(\d{3,8})$')`
+使用：
+
+``` python
 >>> re_telephone.match('010-12345').groups()
 ('010', '12345')
 >>> re_telephone.match('010-8086').groups()
 ('010', '8086')
+```
+
+## collections
+Python内建的一个集合模块，提供了许多有用的集合类
 
 
-#collections
-#Python内建的一个集合模块，提供了许多有用的集合类
+## namedtuple
+创建自定义的tuple对象，规定tuple元素的个数，可用属性来引用tuple的某个元素
 
-
-#namedtuple
-#创建自定义的tuple对象，规定tuple元素的个数，可用属性来引用tuple的某个元素
+``` python
 >>> from collections import namedtuple
 >>> Point = namedtuple('Point', ['x', 'y'])
 >>> p = Point(1, 2)
@@ -836,9 +865,11 @@ t2.join()
 1
 >>> p.y
 2
+```
 
-#deque
-#双向队列
+## deque 双向队列
+
+``` python
 >>> from collections import deque
 >>> q = deque(['a', 'b', 'c'])
 >>> q.append('x')
@@ -846,9 +877,12 @@ t2.join()
 >>> q
 deque(['y', 'a', 'b', 'c', 'x'])
 q.popleft()
+```
 
-#defaultdict
-#使用dict， key不存在， 抛出KeyError， 使用defaultdict, 返回一个默认值
+## defaultdict
+使用dict， key不存在， 抛出KeyError， 使用defaultdict, 返回一个默认值
+
+``` python
 >>> from collections import defaultdict
 >>> dd = defaultdict(lambda: 'N/A')
 >>> dd['key1'] = 'abc'
@@ -856,11 +890,14 @@ q.popleft()
 'abc'
 >>> dd['key2'] # key2不存在，返回默认值
 'N/A'
+```
 
-#OrderedDict
-#dict, Key是无序的， OrderedDict保持Key的顺序
-#OrderedDict的Key按照 插入顺序 排列
-#可以实现FIFO
+## OrderedDict
+dict, Key是无序的， OrderedDict保持Key的顺序
+OrderedDict的Key按照 插入顺序 排列
+可以实现FIFO
+
+``` python
 >>> from collections import OrderedDict
 >>> d = dict([('a', 1), ('b', 2), ('c', 3)])
 >>> d # dict的Key是无序的
@@ -868,6 +905,7 @@ q.popleft()
 >>> od = OrderedDict([('a', 1), ('b', 2), ('c', 3)])
 >>> od # OrderedDict的Key是有序的
 OrderedDict([('a', 1), ('b', 2), ('c', 3)])
+
 #可以实现FIFO
 from collections import OrderedDict
 
@@ -888,9 +926,12 @@ class LastUpdatedOrderedDict(OrderedDict):
         else:
             print 'add:', (key, value)
         OrderedDict.__setitem__(self, key, value)
+```
 
-#Counter
-#计数器
+## Counter
+计数器
+
+``` python
 >>> from collections import Counter
 >>> c = Counter()
 >>> for ch in 'programming':
@@ -898,13 +939,13 @@ class LastUpdatedOrderedDict(OrderedDict):
 ...
 >>> c
 Counter({'g': 2, 'm': 2, 'r': 2, 'a': 1, 'i': 1, 'o': 1, 'n': 1, 'p': 1})
+```
 
+## base64
+用64个字符来表示任意二进制数据的方法
 
-#base64
-#用64个字符来表示任意二进制数据的方法
-
-#原理
-#准备一个包含64个字符的数组
+**原理**
+准备一个包含64个字符的数组
 ['A', 'B', 'C', ... 'a', 'b', 'c', ... '0', '1', ... '+', '/']
 对二进制数据处理，每3个字节一组， 一共是3x8=24bit， 划分为4组，每组6bit
 
@@ -914,16 +955,18 @@ b1       b2       b3
 n1      n2      n3      n4
 得到4个数字为索引，查表，得到4个字符，就是编码后的字符串
 
-#特性
+**特性**
 3字节二进制数据编码为4字节的文本，长度增加33%，但编码后的文本数据可以直接在页面显示
-#补齐
+**补齐**
 当要编码的二进制数据不是3的倍数，出现剩下1个或2个字节。Base64用\x00字节在末尾补足,再在编码的末尾加上1或2个=号,表示补了多少字节,解码时,自动去掉
 
-#标准Base64编码后可能出现+和/, 在URL中就不能直接作为参数
+标准Base64编码后可能出现+和/, 在URL中就不能直接作为参数
 #url safe把 + 和 / 换为 - 和 _
 
-#=号
-#=在URL Cookie中会造成歧义, 很多Base64编码后会去掉=, 但Base64编码长度永远是4的倍数, 所以解码是补足缺少位数即可
+**=号**
+`=`在URL Cookie中会造成歧义, 很多Base64编码后会去掉=, 但Base64编码长度永远是4的倍数, 所以解码是补足缺少位数即可
+
+``` python
 import base64
 
 def b64de(s):
@@ -936,15 +979,17 @@ def b64de(s):
 b64de('YWJjZA')
 b64de('YWJjZA=')
 b64de('YWJjZA==')
+```
 
+## hashlib
+摘要算法
 
-#hashlib
-#摘要算法
+对任意长度的数据data计算出固定长度的摘要digest,目的是为了发现原始数据是否被人篡改过
+由于常用的MD5值很容易被计算出来, 所以, 要确保存储的用户口令不是已被计算出来的常用口令的MD5,需要对原始口令加一个复杂字符串来实现,俗称"加盐"
 
-#对任意长度的数据data计算出固定长度的摘要digest,目的是为了发现原始数据是否被人篡改过
-#由于常用的MD5值很容易被计算出来, 所以, 要确保存储的用户口令不是已被计算出来的常用口令的MD5,需要对原始口令加一个复杂字符串来实现,俗称"加盐"
+**Ex 根据用户输入注册并登陆验证**
 
-#Ex 根据用户输入注册并登陆验证
+``` python
 #!/usr/bin/env python
 # -*- coding:utf-8 -*-
 import hashlib
@@ -971,12 +1016,13 @@ password = raw_input('input your password:')
 
 register(username, password)
 login(username, password)
+```
 
+## GUI(图形界面)
 
-#GUI
-#图形界面
+**Tkinter**
 
-#Tkinter
+``` python
 from Tkinter import *
 import tkMessageBox
 
@@ -1002,14 +1048,15 @@ class Application(Frame):
 app = Application()
 app.master.title('Hello World')
 app.mainloop()
+```
 
+## TCP编程
 
-#TCP编程
+另见code/socket/
 
-#另见code/socket/
+**socket访问新浪首页**
 
-#socket访问新浪首页
-
+``` python
 #!/usr/bin/env python
 # -*- coding:utf-8 -*-
 import socket
@@ -1043,13 +1090,14 @@ print header
 # 把接收的数据写入文件:
 with open('sina.html', 'wb') as f:
     f.write(html)
+```
 
+## SMTP发送邮件
+见/email/
 
-# SMTP发送邮件
-# 见/email/
-
-# 参考https://docs.python.org/2/library/email.mime.html
-# 构造一个邮件对象就是一个Message对象, 如果构造一个MIMEText对象, 就是文本邮件对象, 如果构造一个MIMEImage对象, 就表示一个作为附件的图片, 多个对象组合, 使用MIMEMultipart对象, 而MIMEBase可以表示任何对象. 它们的继承关系如下
+参考https://docs.python.org/2/library/email.mime.html
+构造一个邮件对象就是一个Message对象, 如果构造一个MIMEText对象, 就是文本邮件对象, 如果构造一个MIMEImage对象, 就表示一个作为附件的图片, 多个对象组合, 使用MIMEMultipart对象, 而MIMEBase可以表示任何对象. 它们的继承关系如下
+```
 Message
 +- MIMEBase
     +- MIMEMultipart
@@ -1057,3 +1105,4 @@ Message
         +- MIMEMessage
         +- MIMEText
         +- MIMEImage
+```
