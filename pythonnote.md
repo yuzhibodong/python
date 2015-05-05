@@ -1106,3 +1106,62 @@ Message
         +- MIMEText
         +- MIMEImage
 ```
+
+## Http
+#### chrome F12
+`Elements` 显示网页结构
+`Network`显示浏览器和服务器的通信
+- 选择`Network`
+- 第一个小红灯亮
+- 输入`www.sina.com.cn`
+- `Network`中点击`sina.com`
+- 点击右侧的`view source`
+
+> GET / HTTP/1.1
+- `GET`读取请求
+- `/`URL路径 首页
+- `HTTP/1.1`采用HTTP协议 版本是1.1
+> Host: www.sina.com.cn
+- 请求的域名
+- 如果一个服务器有多个网站, 服务器需要通过Host来区分浏览器请求的是哪个网站
+####`Response Headers`
+- 点击`view source`
+
+> 200 OK
+- `200`成功响应
+- `OK` 是说明
+- `404 Not Found`网页不存在
+- `500 Internal Server Error` 服务器内部出错
+
+> Content-Type: text/html
+- `Content-Type`响应的内容
+- `text/html`HTML网页
+
+#### HTTP响应
+- `200`成功
+- `3XX`重定向
+- `4XX`客户端请求有误
+- `5XX`服务器端处理出错
+
+#### HTTP格式
+**HTTP GET请求的格式**
+> GET /path HTTP/1.1
+> Header1: Value1
+> Header2: Value2
+> Header3: Value3
+
+每个Header一行一个，换行符是`\r\n`
+
+**HTTP响应的格式**
+> 200 OK
+Header1: Value1
+Header2: Value2
+Header3: Value3
+
+> body data goes here...
+
+当遇到连续两个`\r\n`时，Header部分结束，后面的数据全部是Body
+HTTP响应如果包含body，也是通过`\r\n\r\n`来分隔的
+
+**例子**
+socket tcp请求`send('GET / HTTP/1.1\r\nHost:www.sina.com.cn'\r\nConnection:close\r\n\r\n)`
