@@ -1,16 +1,21 @@
 [TOC]
 
 **文件头**
+
 ``` python
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 ```
+**web调试**
+`__main__`中`app.run(debug=True)`开启调试
+
 **查看帮助文档**
 `pydoc function_or_module`
 
 **类执行顺序**
 从上向下执行, 定义需要放前面
 或者采取如下格式, 就可以把代码放最上面了
+
 ``` python
 def main():
     ...
@@ -19,12 +24,14 @@ def other_functions():
 if __name__ == '__main__':
     main()
 ```
+
 上面`if`格式最主要作用是当前`.py`文件如果执行, `__name__`为`__main__`
 此时执行程序, 当被import时, __name__为文件名, 此时就不执行了
 <http://stackoverflow.com/questions/419163/what-does-if-name-main-do>
 <http://www.cnblogs.com/xuxm2007/archive/2010/08/04/1792463.html>
 
-**判断变量是否为某类型**
+**判断变量是否为某类型***
+
 ``` python
 isinstance(s, string)
 ```
@@ -35,12 +42,14 @@ isinstance(s, string)
 
 ## 字符串
 字符串长度
+
 ```
 len('string')
 ```
 字符串拼接 `+`
 ## 数据类型和变量
 **多行转义**
+
 ```
 r'''
 '''
