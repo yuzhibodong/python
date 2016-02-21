@@ -33,11 +33,11 @@ while True:
             move_x = 0
             move_y = 0
 
-        # 计算出新的坐标
-        x += move_x
-        y += move_y
+    # 计算出新的坐标
+    x += move_x
+    y += move_y
 
-        screen.fill((0, 0, 0))
-        screen.blit(background, (x, y))
-        # 在新的位置上画图
-        pygame.display.update()
+    screen.fill((0, 0, 0))
+    screen.blit(background, (x, y))
+    # 在新的位置上画图
+    pygame.display.update()
