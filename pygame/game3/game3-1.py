@@ -1,3 +1,7 @@
+#!/usr/bin/env python3
+# -*- coding:utf-8 -*-
+# desciption: F键切换窗口 全屏
+
 background_image_filename = 'sushiplate.jpg'
 
 import pygame
