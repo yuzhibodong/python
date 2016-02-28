@@ -28,4 +28,6 @@ while True:
 
     screen.blit(background, (0, 0))
 
-
+    x -= 2 # 文字滚动速度
+    if x < -text_surface:
+        pass
