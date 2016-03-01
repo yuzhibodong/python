@@ -12,9 +12,10 @@ from sys import exit
 pygame.init()
 screen = pygame.display.set_mode((640, 480), 0, 32)
 
-# font = pygame.font.SysFont("宋体", 40)
-font = pygame.font.Font("simsun.ttc", 40)
+font = pygame.font.SysFont("汉仪中等线简", 40)
+# font = pygame.font.Font("simsun.ttc", 40)
 text_surface = font.render(u"你好", True, (0, 0, 255))
+
 
 x = 0
 y = (480 - text_surface.get_height())/2
@@ -28,6 +29,10 @@ while True:
 
     screen.blit(background, (0, 0))
 
-    x -= 2 # 文字滚动速度
-    if x < -text_surface:
-        pass
+    x -= 0.5  # 调节文字滚动速度
+    if x < -text_surface.get_width():
+        x = 640 - text_surface.get_width()
+
+    screen.blit(text_surface, (x, y))
+
+    pygame.display.update()
