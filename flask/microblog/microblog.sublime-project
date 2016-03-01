@@ -11,8 +11,10 @@
 	"folders":
 	[
 		{
-			"follow_symlinks": true,
 			"path": "."
+		},
+		{
+			"path": "/home/blue/github/bluethon"
 		}
 	],
 	"settings":

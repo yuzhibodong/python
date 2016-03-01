@@ -12,26 +12,26 @@
 	"buffers":
 	[
 		{
-			"file": "app/__init__.py",
-			"settings":
-			{
-				"buffer_size": 247,
-				"line_ending": "Unix"
-			}
-		},
-		{
 			"file": "app/views.py",
 			"settings":
 			{
-				"buffer_size": 447,
+				"buffer_size": 687,
 				"line_ending": "Unix"
 			}
 		},
 		{
-			"file": "run.py",
+			"file": "app/templates/index.html",
 			"settings":
 			{
-				"buffer_size": 202,
+				"buffer_size": 205,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "app/templates/base.html",
+			"settings":
+			{
+				"buffer_size": 276,
 				"line_ending": "Unix"
 			}
 		}
@@ -87,8 +87,8 @@
 	"build_varint": "",
 	"command_palette":
 	{
-		"height": 251.0,
-		"last_filter": "",
+		"height": 392.0,
+		"last_filter": "i",
 		"selected_items":
 		[
 			[
@@ -96,12 +96,12 @@
 				"Package Control: Install Package"
 			],
 			[
-				"packc",
-				"Package Control: Disable Package"
-			],
-			[
 				"re",
 				"Package Control: Remove Package"
+			],
+			[
+				"packc",
+				"Package Control: Disable Package"
 			],
 			[
 				"list",
@@ -152,7 +152,7 @@
 	},
 	"console":
 	{
-		"height": 168.0,
+		"height": 185.0,
 		"history":
 		[
 			"pwd",
@@ -171,27 +171,43 @@
 	"expanded_folders":
 	[
 		"/home/blue/github/python/flask/microblog",
-		"/home/blue/github/python/flask/microblog/app"
+		"/home/blue/github/python/flask/microblog/app",
+		"/home/blue/github/python/flask/microblog/app/templates",
+		"/home/blue/github/bluethon",
+		"/home/blue/github/bluethon/vim"
 	],
 	"file_history":
 	[
-		"/home/blue/github/python/flask/microblog/microblog.sublime-project",
+		"/home/blue/github/python/flask/microblog/app/templates/index.html",
+		"/home/blue/.config/sublime-text-3/Packages/Emmet/Emmet.sublime-settings",
+		"/home/blue/github/python/flask/microblog/app/__init__.py",
+		"/home/blue/github/python/flask/microblog/run.py",
 		"/home/blue/.config/sublime-text-3/Packages/User/Default (Linux).sublime-keymap",
+		"/home/blue/.config/sublime-text-3/Packages/User/HTML.sublime-settings",
+		"/home/blue/.config/sublime-text-3/Packages/Emmet/Default (Linux).sublime-keymap",
 		"/home/blue/.config/sublime-text-3/Packages/SublimeTmpl/Default (Linux).sublime-keymap",
-		"/home/blue/github/python/flask/microblog/flask.sublime-project",
-		"/home/blue/.config/sublime-text-3/Packages/User/Python.sublime-settings",
 		"/home/blue/.config/sublime-text-3/Packages/Default/Preferences.sublime-settings",
 		"/home/blue/.config/sublime-text-3/Packages/User/Preferences.sublime-settings",
-		"/home/blue/github/python/flask/microblog/app/__init__.py",
+		"/home/blue/.config/sublime-text-3/Packages/Colorcoder/colorcoder.sublime-settings",
+		"/home/blue/.config/sublime-text-3/Packages/User/Gist.sublime-settings",
+		"/home/blue/.config/sublime-text-3/Packages/Gist/Gist.sublime-settings",
+		"/home/blue/.config/sublime-text-3/Packages/User/Python.sublime-settings",
+		"/home/blue/.config/sublime-text-3/Packages/Anaconda/Anaconda.sublime-settings",
+		"/home/blue/.config/sublime-text-3/Packages/User/Anaconda.sublime-settings",
+		"/home/blue/.config/sublime-text-3/Packages/User/JSON.sublime-settings",
+		"/home/blue/.config/sublime-text-3/Packages/Anaconda/Default (Linux).sublime-keymap",
+		"/home/blue/.config/sublime-text-3/Packages/SublimeTmpl/Main.sublime-menu",
+		"/home/blue/.config/sublime-text-3/Packages/SublimeTmpl/README.md",
+		"/home/blue/.config/sublime-text-3/Packages/Default/Default (Linux).sublime-keymap",
+		"/home/blue/.config/sublime-text-3/Packages/User/SublimeTmpl.sublime-settings",
+		"/home/blue/.config/sublime-text-3/Packages/SublimeTmpl/Default.sublime-commands",
+		"/home/blue/github/python/flask/microblog/microblog.sublime-project",
+		"/home/blue/github/python/flask/microblog/flask.sublime-project",
 		"/home/blue/.config/sublime-text-3/Packages/User/SideBarEnhancements/Open With/Side Bar.sublime-menu",
 		"/home/blue/.config/sublime-text-3/Packages/User/Python3.sublime-build",
 		"/home/blue/.config/sublime-text-3/Packages/SublimeTmpl/SublimeTmpl.sublime-settings",
 		"/home/blue/.config/sublime-text-3/Packages/SublimeTmpl/templates/python.tmpl",
-		"/home/blue/.config/sublime-text-3/Packages/SublimeTmpl/README.md",
 		"/home/blue/.config/sublime-text-3/Packages/SublimeTmpl/templates/php.tmpl",
-		"/home/blue/.config/sublime-text-3/Packages/SublimeTmpl/Main.sublime-menu",
-		"/home/blue/.config/sublime-text-3/Packages/User/SublimeTmpl.sublime-settings",
-		"/home/blue/.config/sublime-text-3/Packages/SublimeTmpl/Default.sublime-commands",
 		"/home/blue/github/python/pygame/game4/game4-1.py",
 		"/home/blue/.config/sublime-text-3/Packages/SublimePythonIDE/SublimePython.sublime-settings",
 		"/home/blue/.config/sublime-text-3/Packages/SublimePythonIDE/README.markdown",
@@ -209,7 +225,6 @@
 		"/home/blue/github/bluethon/sublime/sublime_imfix/sublime_imfix.c",
 		"/home/blue/github/bluethon/sublime/sublime_imfix/README.md",
 		"/*.c",
-		"/home/blue/.config/sublime-text-3/Packages/Default/Default (Linux).sublime-keymap",
 		"/home/blue/.config/sublime-text-3/Packages/Mozc Input/MozcInput.sublime-settings",
 		"/home/blue/.config/sublime-text-3/Packages/User/MozcInput.sublime-settings",
 		"/home/blue/github/bluethon/vim/vimnote.md",
@@ -230,11 +245,11 @@
 	],
 	"find":
 	{
-		"height": 25.0
+		"height": 36.0
 	},
 	"find_in_files":
 	{
-		"height": 0.0,
+		"height": 96.0,
 		"where_history":
 		[
 		]
@@ -244,6 +259,12 @@
 		"case_sensitive": false,
 		"find_history":
 		[
+			"Examples",
+			"John",
+			"  ",
+			"format",
+			"false",
+			"ctrl+alt+h",
 			"youorg",
 			"@.",
 			"example",
@@ -261,6 +282,7 @@
 		"regex": false,
 		"replace_history":
 		[
+			"    ",
 			"\"",
 			"com"
 		],
@@ -278,19 +300,19 @@
 			[
 				{
 					"buffer": 0,
-					"file": "app/__init__.py",
+					"file": "app/views.py",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 247,
+						"buffer_size": 687,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								235,
-								235
+								612,
+								612
 							]
 						],
 						"settings":
@@ -298,6 +320,41 @@
 							"BracketHighlighterBusy": false,
 							"bh_regions":
 							[
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_double_quote_content",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_tag_content",
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_regex_content",
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_c_define_content",
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_curly_content",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close",
+								"bh_single_quote_content",
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_default_content",
 								"bh_angle",
 								"bh_angle_center",
 								"bh_angle_open",
@@ -308,31 +365,6 @@
 								"bh_round_open",
 								"bh_round_close",
 								"bh_round_content",
-								"bh_default",
-								"bh_default_center",
-								"bh_default_open",
-								"bh_default_close",
-								"bh_default_content",
-								"bh_c_define",
-								"bh_c_define_center",
-								"bh_c_define_open",
-								"bh_c_define_close",
-								"bh_c_define_content",
-								"bh_single_quote",
-								"bh_single_quote_center",
-								"bh_single_quote_open",
-								"bh_single_quote_close",
-								"bh_single_quote_content",
-								"bh_double_quote",
-								"bh_double_quote_center",
-								"bh_double_quote_open",
-								"bh_double_quote_close",
-								"bh_double_quote_content",
-								"bh_regex",
-								"bh_regex_center",
-								"bh_regex_open",
-								"bh_regex_close",
-								"bh_regex_content",
 								"bh_unmatched",
 								"bh_unmatched_center",
 								"bh_unmatched_open",
@@ -342,20 +374,9 @@
 								"bh_square_center",
 								"bh_square_open",
 								"bh_square_close",
-								"bh_square_content",
-								"bh_curly",
-								"bh_curly_center",
-								"bh_curly_open",
-								"bh_curly_close",
-								"bh_curly_content",
-								"bh_tag",
-								"bh_tag_center",
-								"bh_tag_open",
-								"bh_tag_close",
-								"bh_tag_content"
+								"bh_square_content"
 							],
 							"colorcode": true,
-							"history_list_is_closing": true,
 							"syntax": "Packages/Python/Python.sublime-syntax"
 						},
 						"translation.x": 0.0,
@@ -367,19 +388,19 @@
 				},
 				{
 					"buffer": 1,
-					"file": "app/views.py",
+					"file": "app/templates/index.html",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 447,
+						"buffer_size": 205,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								447,
-								447
+								204,
+								204
 							]
 						],
 						"settings":
@@ -387,6 +408,41 @@
 							"BracketHighlighterBusy": false,
 							"bh_regions":
 							[
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_double_quote_content",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_tag_content",
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_regex_content",
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_c_define_content",
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_curly_content",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close",
+								"bh_single_quote_content",
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_default_content",
 								"bh_angle",
 								"bh_angle_center",
 								"bh_angle_open",
@@ -397,31 +453,6 @@
 								"bh_round_open",
 								"bh_round_close",
 								"bh_round_content",
-								"bh_default",
-								"bh_default_center",
-								"bh_default_open",
-								"bh_default_close",
-								"bh_default_content",
-								"bh_c_define",
-								"bh_c_define_center",
-								"bh_c_define_open",
-								"bh_c_define_close",
-								"bh_c_define_content",
-								"bh_single_quote",
-								"bh_single_quote_center",
-								"bh_single_quote_open",
-								"bh_single_quote_close",
-								"bh_single_quote_content",
-								"bh_double_quote",
-								"bh_double_quote_center",
-								"bh_double_quote_open",
-								"bh_double_quote_close",
-								"bh_double_quote_content",
-								"bh_regex",
-								"bh_regex_center",
-								"bh_regex_open",
-								"bh_regex_close",
-								"bh_regex_content",
 								"bh_unmatched",
 								"bh_unmatched_center",
 								"bh_unmatched_open",
@@ -431,20 +462,10 @@
 								"bh_square_center",
 								"bh_square_open",
 								"bh_square_close",
-								"bh_square_content",
-								"bh_curly",
-								"bh_curly_center",
-								"bh_curly_open",
-								"bh_curly_close",
-								"bh_curly_content",
-								"bh_tag",
-								"bh_tag_center",
-								"bh_tag_open",
-								"bh_tag_close",
-								"bh_tag_content"
+								"bh_square_content"
 							],
 							"colorcode": true,
-							"syntax": "Packages/Python/Python.sublime-syntax"
+							"syntax": "Packages/HTML/HTML.sublime-syntax"
 						},
 						"translation.x": 0.0,
 						"translation.y": 0.0,
@@ -455,19 +476,19 @@
 				},
 				{
 					"buffer": 2,
-					"file": "run.py",
+					"file": "app/templates/base.html",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 202,
+						"buffer_size": 276,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								19,
-								19
+								164,
+								164
 							]
 						],
 						"settings":
@@ -475,6 +496,41 @@
 							"BracketHighlighterBusy": false,
 							"bh_regions":
 							[
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_double_quote_content",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_tag_content",
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_regex_content",
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_c_define_content",
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_curly_content",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close",
+								"bh_single_quote_content",
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_default_content",
 								"bh_angle",
 								"bh_angle_center",
 								"bh_angle_open",
@@ -485,31 +541,6 @@
 								"bh_round_open",
 								"bh_round_close",
 								"bh_round_content",
-								"bh_default",
-								"bh_default_center",
-								"bh_default_open",
-								"bh_default_close",
-								"bh_default_content",
-								"bh_c_define",
-								"bh_c_define_center",
-								"bh_c_define_open",
-								"bh_c_define_close",
-								"bh_c_define_content",
-								"bh_single_quote",
-								"bh_single_quote_center",
-								"bh_single_quote_open",
-								"bh_single_quote_close",
-								"bh_single_quote_content",
-								"bh_double_quote",
-								"bh_double_quote_center",
-								"bh_double_quote_open",
-								"bh_double_quote_close",
-								"bh_double_quote_content",
-								"bh_regex",
-								"bh_regex_center",
-								"bh_regex_open",
-								"bh_regex_close",
-								"bh_regex_content",
 								"bh_unmatched",
 								"bh_unmatched_center",
 								"bh_unmatched_open",
@@ -519,20 +550,10 @@
 								"bh_square_center",
 								"bh_square_open",
 								"bh_square_close",
-								"bh_square_content",
-								"bh_curly",
-								"bh_curly_center",
-								"bh_curly_open",
-								"bh_curly_close",
-								"bh_curly_content",
-								"bh_tag",
-								"bh_tag_center",
-								"bh_tag_open",
-								"bh_tag_close",
-								"bh_tag_content"
+								"bh_square_content"
 							],
 							"colorcode": true,
-							"syntax": "Packages/Python/Python.sublime-syntax"
+							"syntax": "Packages/HTML/HTML.sublime-syntax"
 						},
 						"translation.x": 0.0,
 						"translation.y": 0.0,
@@ -608,6 +629,10 @@
 		"last_filter": "",
 		"selected_items":
 		[
+			[
+				"inex",
+				"microblog/app/templates/index.html"
+			],
 			[
 				"game4",
 				"python/pygame/game4/game4-1.py"
