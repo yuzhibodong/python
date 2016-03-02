@@ -11,7 +11,8 @@
 	"folders":
 	[
 		{
-			"path": "."
+			"path": ".",
+			"folder_exclude_patterns":["flask"]
 		},
 		{
 			"path": "/home/blue/github/bluethon"
@@ -20,5 +21,5 @@
 	"settings":
 	{
 		"python_interpreter": "./flask/bin/python3"
-	}
+	},
 }
