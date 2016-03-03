@@ -4,6 +4,10 @@
 		"selected_items":
 		[
 			[
+				"for",
+				"for	For Loop"
+			],
+			[
 				"suf",
 				"Surface	statement"
 			],
@@ -204,10 +208,10 @@
 	"buffers":
 	[
 		{
-			"file": "game5/game5-1.py",
+			"file": "game5/game5-3.py",
 			"settings":
 			{
-				"buffer_size": 584,
+				"buffer_size": 706,
 				"line_ending": "Unix"
 			}
 		}
@@ -239,10 +243,14 @@
 	"build_varint": "",
 	"command_palette":
 	{
-		"height": 392.0,
-		"last_filter": "i",
+		"height": 336.0,
+		"last_filter": "re",
 		"selected_items":
 		[
+			[
+				"re",
+				"Package Control: Remove Package"
+			],
 			[
 				"i",
 				"Package Control: Install Package"
@@ -254,10 +262,6 @@
 			[
 				"disp",
 				"Package Control: Disable Package"
-			],
-			[
-				"re",
-				"Package Control: Remove Package"
 			],
 			[
 				"rem",
@@ -462,13 +466,26 @@
 	"expanded_folders":
 	[
 		"/D/github/python/pygame",
-		"/D/github/python/pygame/game5"
+		"/D/github/python/pygame/game5",
+		"/D/github/bluethon"
 	],
 	"file_history":
 	[
+		"/C/Users/jiahaibo/AppData/Roaming/Sublime Text 3/Packages/User/Default (Windows).sublime-keymap",
+		"/C/Users/jiahaibo/AppData/Roaming/Sublime Text 3/Packages/Default/Default (Windows).sublime-keymap",
+		"/D/github/python/pygame/game5/game5-2.py",
+		"/C/Users/jiahaibo/AppData/Roaming/Sublime Text 3/Packages/User/Preferences.sublime-settings",
+		"/C/Users/jiahaibo/AppData/Roaming/Sublime Text 3/Packages/Emmet/Emmet.sublime-settings",
+		"/C/Users/jiahaibo/AppData/Roaming/Sublime Text 3/Packages/Anaconda/Anaconda.sublime-settings",
+		"/C/Users/jiahaibo/AppData/Roaming/Sublime Text 3/Packages/User/Anaconda.sublime-settings",
+		"/C/Users/jiahaibo/AppData/Roaming/Sublime Text 3/Packages/User/Emmet.sublime-settings",
+		"/C/Users/jiahaibo/AppData/Roaming/Sublime Text 3/Packages/User/Python.sublime-settings",
+		"/D/github/python/pygame/game5/game5-1.py",
+		"/D/Python34/Lib/distutils/msvc9compiler.py",
+		"/C/Users/jiahaibo/Desktop/1.reg",
+		"/D/Python34/Lib/distutils/msvccompiler.py",
 		"/C/Users/jiahaibo/AppData/Roaming/Sublime Text 3/Packages/SublimeTmpl/README.md",
 		"/C/Users/jiahaibo/AppData/Local/Temp/360zip$Temp/360$4/Default.sublime-keymap",
-		"/C/Users/jiahaibo/AppData/Roaming/Sublime Text 3/Packages/User/Default (Windows).sublime-keymap",
 		"/C/Users/jiahaibo/AppData/Roaming/Sublime Text 3/Packages/User/SublimeTmpl.sublime-settings",
 		"/C/Users/jiahaibo/AppData/Local/Temp/360zip$Temp/360$3/Default.sublime-keymap",
 		"/C/Users/jiahaibo/AppData/Local/Temp/360zip$Temp/360$2/Default.sublime-commands",
@@ -478,12 +495,9 @@
 		"/C/Users/jiahaibo/AppData/Roaming/Sublime Text 3/Packages/SublimeTmpl/Main.sublime-menu",
 		"/C/Users/jiahaibo/AppData/Roaming/Sublime Text 3/Packages/Default/Preferences.sublime-settings",
 		"/C/Users/jiahaibo/AppData/Roaming/Sublime Text 3/Packages/Anaconda/Default (Windows).sublime-keymap",
-		"/C/Users/jiahaibo/AppData/Roaming/Sublime Text 3/Packages/User/Preferences.sublime-settings",
-		"/C/Users/jiahaibo/AppData/Roaming/Sublime Text 3/Packages/Default/Default (Windows).sublime-keymap",
 		"/C/Users/jiahaibo/AppData/Roaming/Sublime Text 3/Packages/SublimeTmpl/sublime-tmpl.py",
 		"/C/Users/jiahaibo/AppData/Roaming/Sublime Text 3/Packages/SublimeTmpl/Default.sublime-commands",
 		"/C/Users/jiahaibo/AppData/Roaming/Sublime Text 3/Packages/AutoFileName/autofilename.sublime-settings",
-		"/C/Users/jiahaibo/AppData/Roaming/Sublime Text 3/Packages/User/Python.sublime-settings",
 		"/C/Users/jiahaibo/AppData/Roaming/Sublime Text 3/Packages/User/default_file_type.sublime-settings",
 		"/C/Users/jiahaibo/AppData/Roaming/Sublime Text 3/Packages/User/Distraction Free.sublime-settings",
 		"/C/Users/jiahaibo/AppData/Roaming/Sublime Text 3/Packages/SublimeTmpl/SublimeTmpl.sublime-settings",
@@ -495,8 +509,6 @@
 		"/C/Users/jiahaibo/AppData/Roaming/Sublime Text 3/Packages/User/JSON.sublime-settings",
 		"/D/github/bluethon/markdown/README.md",
 		"/C/Users/jiahaibo/AppData/Roaming/Sublime Text 3/Packages/Anaconda/README.md",
-		"/C/Users/jiahaibo/AppData/Roaming/Sublime Text 3/Packages/User/Anaconda.sublime-settings",
-		"/C/Users/jiahaibo/AppData/Roaming/Sublime Text 3/Packages/Anaconda/Anaconda.sublime-settings",
 		"/D/github/bluethon/sublime/st3/windows/Preferences.sublime-settings",
 		"/D/github/bluethon/sublime/sublimenote.html",
 		"/D/github/bluethon/sublime/packagelist.md",
@@ -504,7 +516,6 @@
 		"/D/github/bluethon/excel/tool.bas",
 		"/D/github/python/pygame/game3/game3-2-jhb.py",
 		"/C/Users/jiahaibo/AppData/Roaming/Sublime Text 3/Packages/User/Package Control.sublime-settings",
-		"/C/Users/jiahaibo/AppData/Roaming/Sublime Text 3/Packages/Emmet/Emmet.sublime-settings",
 		"/C/Users/jiahaibo/AppData/Roaming/Sublime Text 3/Packages/Package Control/Package Control.sublime-settings",
 		"/D/github/python/pygame/game3/game3-2.py",
 		"/D/github/python/pygame/game3/game3-1.py",
@@ -587,13 +598,7 @@
 		"/C/Users/jiahaibo/AppData/Roaming/Sublime Text 2/Packages/PyV8/win64/config.json",
 		"/C/Users/jiahaibo/AppData/Roaming/Sublime Text 3/Packages/PyV8/win64/config.json",
 		"/C/Users/jiahaibo/AppData/Roaming/Sublime Text 3/Packages/PyV8/PyV8.py",
-		"/C/Users/jiahaibo/AppData/Roaming/Sublime Text 3/Packages/GitGutter/GitGutter.sublime-settings",
-		"/C/Users/jiahaibo/AppData/Roaming/Sublime Text 3/Packages/GitGutter/Default (Windows).sublime-keymap",
-		"/C/Users/jiahaibo/AppData/Roaming/Sublime Text 3/Packages/SublimeCodeIntel/Default (Windows).sublime-keymap",
-		"/C/Users/jiahaibo/AppData/Roaming/Sublime Text 3/Packages/Emmet/Default (Windows).sublime-keymap",
-		"/C/Users/jiahaibo/AppData/Roaming/Sublime Text 3/Packages/TrailingSpaces/trailing_spaces.sublime-settings",
-		"/C/Users/jiahaibo/AppData/Roaming/Sublime Text 3/Packages/SideBarEnhancements/Side Bar.sublime-settings",
-		"/C/Users/jiahaibo/AppData/Roaming/Sublime Text 3/Installed Packages/TrailingSpaces.sublime-package"
+		"/C/Users/jiahaibo/AppData/Roaming/Sublime Text 3/Packages/GitGutter/GitGutter.sublime-settings"
 	],
 	"find":
 	{
@@ -614,6 +619,17 @@
 		"case_sensitive": false,
 		"find_history":
 		[
+			"r",
+			"1",
+			"  r1, g1, b1 = color1",
+			"1",
+			"pass",
+			"pasis",
+			"red_scale_surfacek",
+			"red",
+			"red_scale_surface",
+			"vc_e",
+			"vc_",
 			"xrange",
 			"false",
 			"minimap",
@@ -671,6 +687,9 @@
 		"regex": false,
 		"replace_history":
 		[
+			"b",
+			"g",
+			"2",
 			"range",
 			"li",
 			"####",
@@ -690,88 +709,28 @@
 			[
 				{
 					"buffer": 0,
-					"file": "game5/game5-1.py",
+					"file": "game5/game5-3.py",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 584,
+						"buffer_size": 706,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								251,
-								251
+								687,
+								687
 							]
 						],
 						"settings":
 						{
-							"BracketHighlighterBusy": false,
-							"bh_regions":
-							[
-								"bh_round",
-								"bh_round_center",
-								"bh_round_open",
-								"bh_round_close",
-								"bh_round_content",
-								"bh_angle",
-								"bh_angle_center",
-								"bh_angle_open",
-								"bh_angle_close",
-								"bh_angle_content",
-								"bh_curly",
-								"bh_curly_center",
-								"bh_curly_open",
-								"bh_curly_close",
-								"bh_curly_content",
-								"bh_default",
-								"bh_default_center",
-								"bh_default_open",
-								"bh_default_close",
-								"bh_default_content",
-								"bh_square",
-								"bh_square_center",
-								"bh_square_open",
-								"bh_square_close",
-								"bh_square_content",
-								"bh_c_define",
-								"bh_c_define_center",
-								"bh_c_define_open",
-								"bh_c_define_close",
-								"bh_c_define_content",
-								"bh_unmatched",
-								"bh_unmatched_center",
-								"bh_unmatched_open",
-								"bh_unmatched_close",
-								"bh_unmatched_content",
-								"bh_regex",
-								"bh_regex_center",
-								"bh_regex_open",
-								"bh_regex_close",
-								"bh_regex_content",
-								"bh_single_quote",
-								"bh_single_quote_center",
-								"bh_single_quote_open",
-								"bh_single_quote_close",
-								"bh_single_quote_content",
-								"bh_tag",
-								"bh_tag_center",
-								"bh_tag_open",
-								"bh_tag_close",
-								"bh_tag_content",
-								"bh_double_quote",
-								"bh_double_quote_center",
-								"bh_double_quote_open",
-								"bh_double_quote_close",
-								"bh_double_quote_content"
-							],
 							"colorcode": true,
-							"origin_encoding": "ASCII",
-							"syntax": "Packages/Python/Python.tmLanguage"
+							"syntax": "Packages/Python/Python.sublime-syntax"
 						},
 						"translation.x": 0.0,
-						"translation.y": 180.0,
+						"translation.y": 167.0,
 						"zoom_level": 1.0
 					},
 					"stack_index": 0,

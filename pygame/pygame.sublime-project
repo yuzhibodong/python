@@ -11,10 +11,10 @@
 	"folders":
 	[
 		{
-			"path": "D:\\github\\bluethon"
+			"path": "."
 		},
 		{
-			"path": "."
+			"path": "D:\\github\\bluethon"
 		}
 	]
 }
