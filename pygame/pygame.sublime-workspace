@@ -214,6 +214,25 @@
 				"buffer_size": 706,
 				"line_ending": "Unix"
 			}
+		},
+		{
+			"contents": "import numpy\n\n\na = [31, 41, 59, 26, 41, 58]\n\n\ndef insertion_sort(mylist):\n    for x in range(1, len(mylist)):\n        key = mylist[x]\n        y = x - 1\n        while y > -1 and mylist[y] < key:\n            mylist[y + 1] = mylist[y]\n            y -= 1\n        mylist[y + 1] = key\n    return mylist\n\nprint(insertion_sort(a))\n",
+			"file": "/C/Users/jiahaibo/Desktop/test.py",
+			"file_size": 319,
+			"file_write_time": 131018123793589511,
+			"settings":
+			{
+				"buffer_size": 323,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "/D/github/bluethon/algorithm/insertion_sort.py",
+			"settings":
+			{
+				"buffer_size": 587,
+				"line_ending": "Unix"
+			}
 		}
 	],
 	"build_system": "Packages/Python/Python.sublime-build",
@@ -467,7 +486,8 @@
 	[
 		"/D/github/python/pygame",
 		"/D/github/python/pygame/game5",
-		"/D/github/bluethon"
+		"/D/github/bluethon",
+		"/D/github/bluethon/algorithm"
 	],
 	"file_history":
 	[
@@ -619,6 +639,8 @@
 		"case_sensitive": false,
 		"find_history":
 		[
+			"ll",
+			"pass",
 			"r",
 			"1",
 			"  r1, g1, b1 = color1",
@@ -687,6 +709,7 @@
 		"regex": false,
 		"replace_history":
 		[
+			"ary",
 			"b",
 			"g",
 			"2",
@@ -704,7 +727,7 @@
 	"groups":
 	[
 		{
-			"selected": 0,
+			"selected": 1,
 			"sheets":
 			[
 				{
@@ -720,20 +743,81 @@
 						"selection":
 						[
 							[
-								687,
-								687
+								222,
+								222
 							]
 						],
 						"settings":
 						{
 							"colorcode": true,
+							"origin_encoding": "ASCII",
 							"syntax": "Packages/Python/Python.sublime-syntax"
 						},
 						"translation.x": 0.0,
-						"translation.y": 167.0,
+						"translation.y": 94.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 2,
+					"type": "text"
+				},
+				{
+					"buffer": 1,
+					"file": "/C/Users/jiahaibo/Desktop/test.py",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 323,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								278,
+								278
+							]
+						],
+						"settings":
+						{
+							"colorcode": true,
+							"origin_encoding": "ASCII",
+							"syntax": "Packages/Python/Python.sublime-syntax"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
 					"stack_index": 0,
+					"type": "text"
+				},
+				{
+					"buffer": 2,
+					"file": "/D/github/bluethon/algorithm/insertion_sort.py",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 587,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								277,
+								277
+							]
+						],
+						"settings":
+						{
+							"colorcode": true,
+							"origin_encoding": "ASCII",
+							"syntax": "Packages/Python/Python.sublime-syntax"
+						},
+						"translation.x": -0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 1,
 					"type": "text"
 				}
 			]
