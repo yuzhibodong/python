@@ -1,4 +1,4 @@
 flask/microblog/.idea
-*sublime-workspace
+*.sublime-*
 .idea/
 *.pyc

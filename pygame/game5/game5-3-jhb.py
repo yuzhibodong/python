@@ -36,7 +36,7 @@ while True:
 
     tri = [(0, 120), (639, 100), (639, 140)]
     pygame.draw.polygon(screen, (0, 255, 0), tri)
-    pygame.draw.circle(screen, (0, 0, 0), (int(factor * 639.0), 120), 10)
+    pygame.draw.circle(screen, (255, 0, 0), (int(factor * 639.0), 120), 10)
 
     x, y = pygame.mouse.get_pos()
     if pygame.mouse.get_pressed()[0]:
