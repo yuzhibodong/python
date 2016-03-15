@@ -54,4 +54,7 @@ while True:
             # 画点击轨迹图
             if len(points) > 1:
                 pygame.draw.lines(screen, (155, 155, 0), False, points, 2)
+            # 把点画的明显
+            for p in points:
+                pygame.draw.circle(screen, (155, 155, 155), p, 3)
     pygame.display.update()
