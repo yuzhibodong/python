@@ -18,6 +18,8 @@ app.config.from_object('config')
 db = SQLAlchemy(app)
 Im = LoginManager()
 Im.init_app(app)
+# 定义哪个视图允许用户登陆 (不懂?)
+Im.login_view = 'login'
 oid = OpenID(app, os.path.join(basedir, 'tmp'))
 
 from app import views, models
