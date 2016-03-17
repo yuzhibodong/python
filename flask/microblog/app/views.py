@@ -12,10 +12,27 @@ from .forms import LoginForm
 from .models import User
 
 
+@Im.user_loader
+def load_user(id):
+    # id是unicode
+    return User.query.get(int(id))
+
+
+# 辅助判断是否用户已登陆
+# 任何使用before_request装饰器的函数在
+# 接收请求前都会允许
+@app.before_request
+def before_request():
+    # current_user是被Flask-Login设置的
+    g.user = current_user
+
+
 @app.route('/')
 @app.route('/index')
+@login_required  # 保证此页仅能被登陆用户看到
 def index():
-    user = {'nickname': 'Miguel'}
+    # 登陆用户赋值
+    user = g.user
     posts = [
         {
             'author': {'nickname': 'John'},
@@ -43,12 +60,6 @@ def login():
         return oid.try_login(form.openid.data, ask_for=['nickname', 'email'])
     return render_template("login.html", title='Sign In', form=form,
                            providers=app.config['OPENID_PROVIDERS'])
-
-
-@Im.user_loader
-def load_user(id):
-    # id是unicode
-    return User.query.get(int(id))
 
 
 # resp参数传递给after_login, 包含从OpenID提供的返回信息
@@ -81,10 +92,24 @@ def after_login(resp):
     return redirect(request.args.get('next') or url_for('index'))
 
 
-# 辅助判断是否用户已登陆
-# 任何使用before_request装饰器的函数在
-# 接收请求前都会允许
-@app.before_request
-def before_request():
-    # current_user是被Flask-Login设置的
-    g.user = current_user
+# 登出
+@app.route('/logout')
+def logout():
+    logout_user()
+    return redirect(url_for('index'))
+
+
+# 用户信息页
+# <>会转化一个同名参数添加到视图函数
+@app.route('/user/<nickname>')
+@login_required
+def user(nickname):
+    user = User.query.filter_by(nickname=nickname).first()
+    if user is None:
+        flash('User ' + nickname + 'not found.')
+        return redirect(url_for('index'))
+    posts = [
+        {'author': user, 'body': 'Test post #1'},
+        {'author': user, 'body': 'Test post #2'},
+    ]
+    return render_template('user.html', user=user, posts=posts)
