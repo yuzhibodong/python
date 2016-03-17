@@ -6,11 +6,7 @@
 # @Version : 1.0
 
 '''
-通过s=vt 方法, 限制显示效果
-这种通过实践控制要不直接调节帧率效果好
-每秒移动250pixel, 刷新快的机子, 返回时间小
-每次移动慢, 核心就是将移动与时间挂钩,
-不与帧率挂钩, 就可以造成恒定的显示效果
+实现类似回弹效果
 '''
 
 import pygame
@@ -32,10 +28,9 @@ sprite = pygame.image.load(sprite_image_filename)
 clock = pygame.time.Clock()
 
 # sprite的起始x坐标
-x = 0.
+x, y = 100., 100.
 # 速度(pixel/s)
-speed = 250.
-flag = 1
+speed_x, speed_y = 133., 170.
 
 while True:
 
@@ -44,18 +39,29 @@ while True:
             exit()
 
     screen.blit(background, (0, 0))
-    screen.blit(sprite, (x, 100))
+    screen.blit(sprite, (x, y))
 
-    time_passed = clock.tick()
+    # 限制帧数为30帧
+    # 默认为获取上一帧到现在的时间
+    # 30为过了30帧后的时间
+    time_passed = clock.tick(30)
     time_passed_seconds = time_passed / 1000.0
 
-    distance_moved = time_passed_seconds * speed
+    x += speed_x * time_passed_seconds
+    y += speed_y * time_passed_seconds
 
-    x = x + (flag * distance_moved)
-    # 如果移动出屏幕, 搬到开始位置继续
-    if x > 640 or x < 0:
-        flag = flag * (-1)
+    if x > 640 - sprite.get_width():
+        speed_x = -speed_x
+        x = 640 - sprite.get_width()
+    elif x < 0:
+        speed_x = -speed_x
+        x = 0.
 
-    pygame.display.set_caption(str(x))
+    if y > 480 - sprite.get_height():
+        speed_y = -speed_y
+        y = 480 - sprite.get_height()
+    elif y < 0:
+        speed_y = -speed_y
+        y = 0.
 
     pygame.display.update()

@@ -5,14 +5,14 @@
 # @Link    : http://github.com/bluethon
 # @Version : 1.0
 
-background_image_filename = '../image/sushiplate.jpg'
-sprite_image_filename = '../image/fugu.png'
 
 import pygame
 from pygame.locals import *
 from sys import exit
 
 
+background_image_filename = '../image/sushiplate.jpg'
+sprite_image_filename = '../image/fugu.png'
 pygame.init()
 
 screen = pygame.display.set_mode((640, 480), 0, 32)
@@ -38,4 +38,3 @@ while True:
         x = 0.
 
     pygame.display.update()
-
