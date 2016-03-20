@@ -101,10 +101,14 @@ def logout():
 
 # 用户信息页
 # <>会转化一个同名参数添加到视图函数
+# 当客户端以URL /user/jack请求时
+# 视图函数收到一个 nickname='jack'参数而被调用
 @app.route('/user/<nickname>')
 @login_required
 def user(nickname):
+    # 用参数nickname试着从数据库载入用户
     user = User.query.filter_by(nickname=nickname).first()
+    # 如果未找到, 抛出错误信息, 重定向到主页
     if user is None:
         flash('User ' + nickname + 'not found.')
         return redirect(url_for('index'))
