@@ -1,5 +1,7 @@
 flask/microblog/.idea
 flask/microblog/flask
+flask/flasky/.idea
+flask/flasky/venv
 *.sublime-*
 .idea/
 *.pyc
