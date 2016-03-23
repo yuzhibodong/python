@@ -13,9 +13,12 @@ py3 改良使用pygame上的vec2d库(http://www.pygame.org/wiki/2DVectorClass)
 同时修改部分原博客代码
 '''
 import pygame
+# 导入上级目录, 否则导入vec2d报错
+import sys
+sys.path.append('..')
 from pygame.locals import *
 from sys import exit
-from vec2d import *
+from lib.vec2d import *
 # from gameobjects.vector2 import Vector2
 
 
@@ -57,7 +60,7 @@ while True:
 
     # 这个heading可以看做是鱼的速度, 但是由于这样的运算, 鱼的速度就不断改变了
     # 在没有到达鼠标时, 加速运动, 超过则减速. 因而鱼会在鼠标附近晃动
-    heading = heading + (vector_to_mouse * 0.6)
+    heading = heading * 0.9 + (vector_to_mouse * 0.6)
 
     position += heading * time_passed_second
     pygame.display.update()
