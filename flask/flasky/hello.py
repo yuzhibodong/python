@@ -4,12 +4,20 @@
 # @Author  : Bluethon (j5088794@gmail.com)
 # @Link    : http://github.com/bluethon
 
-from flask import Flask
+from flask import Flask, render_template
+from flask.ext.script import Manager
+from flask.ext.bootstrap import Bootstrap
+
 
 # Flask类的构造函数必填参数只有一个, 即程序主模块或包的名字
 # 在大多数情况下, Python的__name__变量即为所需值
 # Flask用此参数决定程序的根目录, 以便找资源文件的相对位置
 app = Flask(__name__)
+
+# 命令行可执行启动参数
+manager = Manager(app)
+# 用户界面插件
+bootstrap = Bootstrap(app)
 
 
 # 程序实例需要知道对每个URL请求运行哪些代码, 所以保存一个URL到Python函数的映射关系
@@ -18,7 +26,7 @@ app = Flask(__name__)
 @app.route('/')
 # 视图函数(view function)
 def index():
-    return '<h1>Hello World!</h1>'
+    return render_template('index.html')
 
 
 # 动态路由
@@ -28,8 +36,9 @@ def index():
 # eg: /user/<int:id> 只匹配片段id为整数的URL
 @app.route('/user/<name>')
 def user(name):
-    return '<h1>Hello, %s!</h1>' % name
+    return render_template('user.html', name=name)
 
 # 此处写法确保执行这个脚本时才启动开发服务器
 if __name__ == '__main__':
-    app.run(debug=True)
+    # app.run(debug=True)
+    manager.run()
