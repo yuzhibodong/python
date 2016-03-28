@@ -10,6 +10,7 @@
 -------------
 原库使用gameobjects仅支持py2
 py3 改良使用pygame上的vec2d库(http://www.pygame.org/wiki/2DVectorClass)
+存放于lib/下
 同时修改部分原博客代码
 '''
 import pygame
