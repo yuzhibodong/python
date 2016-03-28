@@ -38,6 +38,21 @@ def index():
 def user(name):
     return render_template('user.html', name=name)
 
+
+# 自定义错误页面
+# 404, 客户端请求未知页面或路由
+@app.errorhandler(404)
+def page_not_found(e):
+    # 除正常返回响应外, 还返回与该错误对应的数字状态码
+    return render_template('404.html'), 404
+
+
+# 500, 有未处理的异常
+@app.errorhandler(500)
+def internal_server_error(e):
+    return render_template('500.html'), 500
+
+
 # 此处写法确保执行这个脚本时才启动开发服务器
 if __name__ == '__main__':
     # app.run(debug=True)
