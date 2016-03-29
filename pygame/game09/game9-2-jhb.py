@@ -19,8 +19,8 @@ import sys
 sys.path.append('..')
 from pygame.locals import *
 from sys import exit
-from lib.vec2d import *
 # from gameobjects.vector2 import Vector2
+from lib.vec2d import *
 
 
 background_image_filename = '../image/sushiplate.jpg'
