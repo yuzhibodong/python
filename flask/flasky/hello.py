@@ -7,6 +7,7 @@
 from flask import Flask, render_template
 from flask.ext.script import Manager
 from flask.ext.bootstrap import Bootstrap
+from flask.ext.moment import Moment
 
 
 # Flask类的构造函数必填参数只有一个, 即程序主模块或包的名字
@@ -18,6 +19,8 @@ app = Flask(__name__)
 manager = Manager(app)
 # 用户界面插件
 bootstrap = Bootstrap(app)
+# 本地化时间
+moment = Moment(app)
 
 
 # 程序实例需要知道对每个URL请求运行哪些代码, 所以保存一个URL到Python函数的映射关系
@@ -26,7 +29,8 @@ bootstrap = Bootstrap(app)
 @app.route('/')
 # 视图函数(view function)
 def index():
-    return render_template('index.html')
+    # 加入datetime变量
+    return render_template('index.html', current_time=datetime.utcnow())
 
 
 # 动态路由

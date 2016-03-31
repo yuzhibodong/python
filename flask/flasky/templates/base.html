@@ -1,5 +1,10 @@
 {% extends "bootstrap/base.html" %}
 
+{% block scripts %}
+    {{ super() }}
+    {{ moment.incluede_moment() }}
+{% endblock scripts %}
+
 {% block title %}
     Flasky
 {% endblock title %}
