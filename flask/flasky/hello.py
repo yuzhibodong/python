@@ -4,33 +4,55 @@
 # @Author  : Bluethon (j5088794@gmail.com)
 # @Link    : http://github.com/bluethon
 
-from flask import Flask, render_template
-from flask.ext.script import Manager
+from flask import Flask, render_template, session, redirect, url_for, flash
+from flask.ext.script import Manager, Server
 from flask.ext.bootstrap import Bootstrap
 from flask.ext.moment import Moment
+from datetime import datetime
+from flask.ext.wtf import Form
+from wtforms import StringField, SubmitField
+from wtforms.validators import Required
 
 
 # Flask类的构造函数必填参数只有一个, 即程序主模块或包的名字
 # 在大多数情况下, Python的__name__变量即为所需值
 # Flask用此参数决定程序的根目录, 以便找资源文件的相对位置
 app = Flask(__name__)
+app.config['SECRET_KEY'] = 'hard to guess string'
 
 # 命令行可执行启动参数
 manager = Manager(app)
+# 调试模式
+# manager.add_command("runserver", Server(use_debugger=True))
+
 # 用户界面插件
 bootstrap = Bootstrap(app)
 # 本地化时间
 moment = Moment(app)
 
 
+# 定义表单类
+class NameForm(Form):
+    name = StringField('What is your name?', validators=[Required()])
+    submit = SubmitField('Submit')
+
+
 # 程序实例需要知道对每个URL请求运行哪些代码, 所以保存一个URL到Python函数的映射关系
 # 处理URL和函数间关系的程序称为路由
 # 使用修饰器把函数注册为事件的处理程序
-@app.route('/')
+@app.route('/', methods=['GET', 'POST'])
 # 视图函数(view function)
 def index():
     # 加入datetime变量
-    return render_template('index.html', current_time=datetime.utcnow())
+    form = NameForm()
+    if form.validate_on_submit():
+        old_name = session.get('name')
+        if old_name is not None and old_name != form.name.data:
+            flash('Looks like you have changed your name!')
+        session['name'] = form.name.datass
+        return redirect(url_for('index'))
+        form.name.data = ''
+    return render_template('index.html', form=form, name=session.get('name'))
 
 
 # 动态路由
