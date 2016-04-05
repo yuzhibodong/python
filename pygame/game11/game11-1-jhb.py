@@ -4,15 +4,16 @@
 # @Author  : Bluethon (j5088794@gmail.com)
 # @Link    : http://github.com/bluethon
 
-'''
+"""
 鼠标+方向控制鱼
-'''
+"""
+
 import sys
 sys.path.append('..')
 import pygame
 from pygame.locals import *
 from sys import exit
-from lib.vec2d import *
+from lib.vec2d import Vec2d
 from math import *
 
 
@@ -29,7 +30,7 @@ clock = pygame.time.Clock()
 
 # 让pygame完全控制鼠标
 pygame.mouse.set_visible(False)
-pygame.event.get_gral(True)
+pygame.event.set_grab(True)
 
 sprite_pos = Vec2d(200, 150)
 sprite_speed = 300.
@@ -54,6 +55,7 @@ while True:
     movement_direction = 0.
 
     # 通过移动偏移量计算移动
+    # 仅获取x的位移量, rotation_direction为float类型
     rotation_direction = pygame.mouse.get_rel()[0] / 5.0
 
     if pressed_keys[K_LEFT]:
@@ -68,7 +70,7 @@ while True:
 
     screen.blit(background, (0, 0))
 
-    rotated_sprite = pygame.transform(sprite, sprite_rotation)
+    rotated_sprite = pygame.transform.rotate(sprite, sprite_rotation)
     w, h = rotated_sprite.get_size()
     sprite_draw_pos = Vec2d(sprite_pos.x-w/2, sprite_pos.y-h/2)
     screen.blit(rotated_sprite, sprite_draw_pos)

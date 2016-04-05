@@ -28,7 +28,7 @@ clock = pygame.time.Clock()
 
 # 让pygame完全控制鼠标
 pygame.mouse.set_visible(False)
-pygame.event.get_gral(True)
+pygame.event.set_grab(True)
 
 sprite_pos = Vec2d(200, 150)
 sprite_speed = 300.
@@ -67,7 +67,7 @@ while True:
 
     screen.blit(background, (0, 0))
 
-    rotated_sprite = pygame.transform(sprite, sprite_rotation)
+    rotated_sprite = pygame.transform.rotate(sprite, sprite_rotation)
     w, h = rotated_sprite.get_size()
     sprite_draw_pos = Vec2d(sprite_pos.x-w/2, sprite_pos.y-h/2)
     screen.blit(rotated_sprite, sprite_draw_pos)
