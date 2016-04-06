@@ -43,13 +43,12 @@ class NameForm(Form):
 @app.route('/', methods=['GET', 'POST'])
 # 视图函数(view function)
 def index():
-    # 加入datetime变量
     form = NameForm()
     if form.validate_on_submit():
         old_name = session.get('name')
         if old_name is not None and old_name != form.name.data:
             flash('Looks like you have changed your name!')
-        session['name'] = form.name.datass
+        session['name'] = form.name.data
         return redirect(url_for('index'))
         form.name.data = ''
     return render_template('index.html', form=form, name=session.get('name'))
