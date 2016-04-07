@@ -5,12 +5,22 @@
 # @Link    : http://github.com/bluethon
 
 """
-基本AI程序
+完整AI程序
 """
+import sys
+sys.path.append('..')
+from random import randint, choice
 
 import pygame
+from pygame.locals import *
 
 from lib.vec2d import Vec2d
+
+
+SCREEN_SIZE = (640, 480)
+NEST_POSITION = (320, 240)
+ANT_COUNT = 10
+NEST_SIZE = 50.0
 
 
 class GameEntity(object):
@@ -136,7 +146,6 @@ class State():
     """docstring for State"""
 
     def __init__(self, name):
-        super(State, self).__init__()
         self.name = name
 
     def do_action(self):
@@ -178,3 +187,63 @@ class StateMachine():
             self.active_state.exit_actions()
         self.active_state = self.states[new_state_name]
         self.active_state.entry_actions()
+
+
+class Leaf(GameEntity):
+    """docstring for Leaf"""
+
+    def __init__(self, world, image):
+        super(Leaf, self).__init__(self, world, "leaf", image)
+
+
+class Spider(GameEntity):
+    """docstring for Spider"""
+
+    def __init__(self, world, image):
+        super(Spider, self).__init__(self, world, "spider", image)
+        self.dead_image = pygame.transform.flip(image, 0, 1)
+        self.health = 25
+        self.speed = 50.0 + randint(-20, 20)
+
+    def bitten(self):
+        self.health -= 1
+        if self.health <= 0:
+            self.speed = 0.0
+            self.image = self.dead_image
+        self.speed = 140.0
+
+    def render(self, surface):
+        super.render(self, surface)
+        x, y = self.location
+        w, h = self.image.get_size()
+        bar_x = x - 12
+        bar_y = y + h / 2
+        surface.fill((255, 0, 0), (bar_x, bar_y, 25, 4))
+        surface.fill((0, 255, 0), (bar_x, bar_y, self.health, 4))
+
+    def process(self, time_passed):
+        x, y = self.location
+        if x > SCREEN_SIZE[0] + 2:
+            self.world.remove_entity(self)
+            return
+        super.process(self. time_passed)
+
+
+def run():
+    pygame.init()
+    screen = pygame.display.set_mode(SCREEN_SIZE, 0 ,32)
+    world = World()
+    w, h = SCREEN_SIZE
+    clock = pygame.time.Clock
+    ant_image = pygame.image.load('../image/ant.png').convert_alpha()
+    leaf_image = pygame.image.load('../image/leaf.png').convert_alpha()
+    spider_image = pygame.image.load('../image/spider.png').convert_alpha()
+
+    for ant_no in range(ANT_COUNT:
+        ant = Ant(world, ant_image)
+        ant.location = Vec2d(randint(0, w), randint(0, h))
+        ant.brain.set_state('exploring_state')
+        world.add_entity(ant)
+
+    while :
+        pass
