@@ -4,21 +4,34 @@
 # @Author  : Bluethon (j5088794@gmail.com)
 # @Link    : http://github.com/bluethon
 
+import os
+
 from flask import Flask, render_template, session, redirect, url_for, flash
 from flask.ext.script import Manager, Server
 from flask.ext.bootstrap import Bootstrap
 from flask.ext.moment import Moment
-from datetime import datetime
 from flask.ext.wtf import Form
 from wtforms import StringField, SubmitField
 from wtforms.validators import Required
+from flask.ext.sqlalchemy import SQLAlchemy
 
+
+# 获取当前文件路径
+basedir = os.path.abspath(os.path.dirname(__file__))
 
 # Flask类的构造函数必填参数只有一个, 即程序主模块或包的名字
 # 在大多数情况下, Python的__name__变量即为所需值
 # Flask用此参数决定程序的根目录, 以便找资源文件的相对位置
 app = Flask(__name__)
+# 设置密匙
 app.config['SECRET_KEY'] = 'hard to guess string'
+# 设置数据库路径
+app.config['SQLALCHEMY_DATABASE_URL'] = (
+    'sqlite:///' + os.path.join(basedir, 'data.sqlite'))
+app.config['SQLALCHEMY_COMMIT_ON_TEARDOWN'] = True
+
+# 数据库实例
+db = SQLAlchemy(app)
 
 # 命令行可执行启动参数
 manager = Manager(app)
@@ -35,6 +48,29 @@ moment = Moment(app)
 class NameForm(Form):
     name = StringField('What is your name?', validators=[Required()])
     submit = SubmitField('Submit')
+
+
+class Role(db.Model):
+    """docstring for Role"""
+    # 定义数据库使用的表名, 若未定义, 会生成默认名称
+    __tablename__ = 'roles'
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(64), unique=True)
+
+    # 重载repr函数, 给解释器的显示类型
+    def __repr__(self):
+        return '<Role %r>' % self.name
+
+
+class User(db.Model):
+    """docstring for User"""
+    __tablename__ = 'user'
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(64), unique=True, index=True)
+
+    # 重载repr函数, 给解释器的显示类型
+    def __repr__(self):
+        return '<User %r>' % self.username
 
 
 # 程序实例需要知道对每个URL请求运行哪些代码, 所以保存一个URL到Python函数的映射关系
