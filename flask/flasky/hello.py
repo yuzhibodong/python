@@ -7,7 +7,7 @@
 import os
 
 from flask import Flask, render_template, session, redirect, url_for, flash
-from flask.ext.script import Manager, Server
+from flask.ext.script import Manager, Shell
 from flask.ext.bootstrap import Bootstrap
 from flask.ext.moment import Moment
 from flask.ext.wtf import Form
@@ -25,37 +25,37 @@ basedir = os.path.abspath(os.path.dirname(__file__))
 app = Flask(__name__)
 # 设置密匙
 app.config['SECRET_KEY'] = 'hard to guess string'
-# 设置数据库路径
-app.config['SQLALCHEMY_DATABASE_URL'] = (
+# 设置数据库路径, 数据库文件名称
+app.config['SQLALCHEMY_DATABASE_URI'] = (
     'sqlite:///' + os.path.join(basedir, 'data.sqlite'))
+# True, 每次请求结束, 自动提交数据库中变动
 app.config['SQLALCHEMY_COMMIT_ON_TEARDOWN'] = True
-
-# 数据库实例
-db = SQLAlchemy(app)
 
 # 命令行可执行启动参数
 manager = Manager(app)
 # 调试模式
 # manager.add_command("runserver", Server(use_debugger=True))
-
 # 用户界面插件
 bootstrap = Bootstrap(app)
 # 本地化时间
 moment = Moment(app)
+# 数据库实例
+db = SQLAlchemy(app)
 
 
-# 定义表单类
-class NameForm(Form):
-    name = StringField('What is your name?', validators=[Required()])
-    submit = SubmitField('Submit')
-
-
+# 定义模型
 class Role(db.Model):
     """docstring for Role"""
     # 定义数据库使用的表名, 若未定义, 会生成默认名称
     __tablename__ = 'roles'
+    # 模型属性
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(64), unique=True)
+    # users属性代表此关系的面向对象视角
+    # 返回与角色关联的用户组列表
+    # 第一个参数, 另一端是哪个模型
+    # backref, 向User添加role属性, 可替代role.id访问Role, 得到的是对象, 而非外键值
+    users = db.relationship('User', backref='role')
 
     # 重载repr函数, 给解释器的显示类型
     def __repr__(self):
@@ -67,11 +67,23 @@ class User(db.Model):
     __tablename__ = 'user'
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(64), unique=True, index=True)
+    # 外键, roles表的id列
+    role_id = db.Column(db.Integer, db.ForeignKey('roles.id'))
 
     # 重载repr函数, 给解释器的显示类型
     def __repr__(self):
         return '<User %r>' % self.username
 
+
+# 定义表单类
+class NameForm(Form):
+    name = StringField('What is your name?', validators=[Required()])
+    submit = SubmitField('Submit')
+
+
+def make_shell_context():
+    return dict(app=app, db=db, User=User, Role=Role)
+manager.add_command('shell', Shell(make_context=make_shell_context))
 
 # 程序实例需要知道对每个URL请求运行哪些代码, 所以保存一个URL到Python函数的映射关系
 # 处理URL和函数间关系的程序称为路由

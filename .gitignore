@@ -1,7 +1,14 @@
-flask/microblog/.idea
-flask/microblog/flask
-flask/flasky/.idea
-flask/flasky/venv
-*.sublime-*
-.idea/
 *.pyc
+
+flask/microblog/flask
+
+# Virtual environment
+flask/flasky/venv
+
+# Developer
+*.sublime-*
+*.idea
+
+# SQLite databases
+*.sqlite
+
