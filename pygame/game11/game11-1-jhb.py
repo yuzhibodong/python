@@ -78,7 +78,8 @@ while True:
     time_passed = clock.tick()
     time_passed_second = time_passed / 1000.0
 
-    sprite_rotation += rotation_direction * sprite_rotation_speed * time_passed_second
+    sprite_rotation += \
+        rotation_direction * sprite_rotation_speed * time_passed_second
 
     heading_x = sin(sprite_rotation*pi/180.)
     heading_y = cos(sprite_rotation*pi/180.)
