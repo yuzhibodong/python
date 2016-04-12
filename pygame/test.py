@@ -1,3 +1,8 @@
-from random import randint
+myd = {'1': 'a', '2': 'b'}
 
-print(randint(-1, 2))
+for x in list(myd.values()):
+    print(x)
+# print(myd)
+# print(myd.keys)
+print(list(myd.values()))
+# print(myd.items)

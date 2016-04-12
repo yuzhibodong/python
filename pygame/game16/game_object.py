@@ -9,7 +9,7 @@
 """
 import sys
 sys.path.append('..')
-from random import randint, choice
+from random import randint
 
 import pygame
 from pygame.locals import *
@@ -47,7 +47,7 @@ class StateMachine():
 
     def __init__(self):
         self.states = {}     # 存储状态
-        self.active_state = None    # d当前有效状态
+        self.active_state = None    # 当前有效状态
 
     def add_state(self, state):
         # 增加状态
@@ -65,8 +65,11 @@ class StateMachine():
     def set_state(self, new_state_name):
         # 更改状态, 执行进入/退出动作
         if self.active_state is not None:
+            # 退出当前活动状态
             self.active_state.exit_actions()
+        # 将新状态设为活动
         self.active_state = self.states[new_state_name]
+        # 进入
         self.active_state.entry_actions()
 
 
@@ -106,9 +109,10 @@ class World(object):
     def __init__(self):
         self.entities = {}  # Store all the entities
         self.entity_id = 0  # Last entity id assigned
-        # 画一个圈作为蚁穴
-        self.background = pygame.surface.Surface(SCREEN_SIZE).convert()
+        # 创建一个surface
+        self.background = pygame.Surface(SCREEN_SIZE).convert()
         self.background.fill((255, 255, 255))
+        # 画一个圈作为蚁穴, int(半径)
         pygame.draw.circle(
             self.background, (200, 255, 200), NEST_POSITION, int(NEST_SIZE))
 
@@ -144,6 +148,7 @@ class World(object):
         # 通过一个范围寻找之内的所有实体
         location = Vec2d(*location)
         for entity in list(self.entities.values()):
+            # entity中找所有name相等的
             if entity.name == name:
                 distance = location.get_distance(entity.location)
                 if distance < range:
@@ -155,14 +160,15 @@ class Leaf(GameEntity):
     """docstring for Leaf"""
 
     def __init__(self, world, image):
-        super(Leaf, self).__init__(world, "leaf", image)
+        super(Leaf, self).__init__(world, 'leaf', image)
 
 
 class Spider(GameEntity):
     """docstring for Spider"""
 
     def __init__(self, world, image):
-        super(Spider, self).__init__(world, "spider", image)
+        super(Spider, self).__init__(world, 'spider', image)
+        # 死亡图像 为y向反转图片
         self.dead_image = pygame.transform.flip(image, 0, 1)
         self.health = 25
         self.speed = 50.0 + randint(-20, 20)
@@ -180,7 +186,9 @@ class Spider(GameEntity):
         w, h = self.image.get_size()
         bar_x = x - 12
         bar_y = y + h / 2
+        # 绘制红色背景条
         surface.fill((255, 0, 0), (bar_x, bar_y, 25, 4))
+        # 绘制绿色血条
         surface.fill((0, 255, 0), (bar_x, bar_y, self.health, 4))
 
     def process(self, time_passed):
@@ -196,7 +204,7 @@ class Ant(GameEntity):
 
     def __init__(self, world, image):
         # 执行基类构造方法
-        super(Ant, self).__init__(world, "ant", image)
+        super(Ant, self).__init__(world, 'ant', image)
         # 创建各种状态
         exploring_state = AntStateExploring(self)
         seeking_state = AntStateSeeking(self)
@@ -238,6 +246,7 @@ class AntStateExploring(State):
 
     def random_destination(self):
         w, h = SCREEN_SIZE
+        # 窗口内随机一点定为目的地
         self.ant.destination = Vec2d(randint(0, w), randint(0, h))
 
     def do_actions(self):
@@ -245,10 +254,12 @@ class AntStateExploring(State):
             self.random_destination()
 
     def check_conditions(self):
+        # 查找范围内是否有叶子
         leaf = self.ant.world.get_close_entity('leaf', self.ant.location)
         if leaf is not None:
             self.ant.leaf_id = leaf.id
             return 'seeking'
+        # 查找巢穴内是否有蜘蛛
         spider = self.ant.world.get_close_entity(
             'spider', NEST_POSITION, NEST_SIZE)
         if spider is not None:
