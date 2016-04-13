@@ -335,6 +335,7 @@ class AntStateHunting(State):
         if self.ant.location.get_distance(spider.location) < 15.0:
             if randint(1, 5) == 1:
                 spider.bitten()
+                # 蜘蛛死亡处理
                 if spider.health <= 0.0:
                     self.ant.carry(spider.image)
                     self.ant.world.remove_entity(spider)
@@ -346,6 +347,7 @@ class AntStateHunting(State):
         spider = self.ant.world.get(self.ant.spider_id)
         if spider is None:
             return 'exploring'
+        # 离开巢穴3倍距离, 放弃攻击
         if spider.location.get_distance(NEST_POSITION) > NEST_SIZE * 3:
             return 'exploring'
         return None
@@ -377,6 +379,7 @@ def run():
         for event in pygame.event.get():
             if event.type == QUIT:
                 return
+        # 还是读取帧间隔时间, 但是限制最高30fps
         time_passed = clock.tick(30)
 
         if randint(1, 10) == 1:
