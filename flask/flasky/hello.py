@@ -6,11 +6,12 @@
 
 import os
 
-from flask import Flask, render_template, session, redirect, url_for, flash
+from flask import Flask, render_template, session, redirect, url_for
 from flask.ext.script import Manager, Shell
 from flask.ext.bootstrap import Bootstrap
 from flask.ext.moment import Moment
 from flask.ext.wtf import Form
+from flask.ext.migrate import Migrate, MigrateCommand
 from wtforms import StringField, SubmitField
 from wtforms.validators import Required
 from flask.ext.sqlalchemy import SQLAlchemy
@@ -41,6 +42,9 @@ bootstrap = Bootstrap(app)
 moment = Moment(app)
 # 数据库实例
 db = SQLAlchemy(app)
+# 数据库迁移
+migrate = Migrate(app=app, db=db, directory='migrations')
+manager.add_command('db', MigrateCommand)
 
 
 # 定义模型
@@ -55,7 +59,7 @@ class Role(db.Model):
     # 返回与角色关联的用户组列表
     # 第一个参数, 另一端是哪个模型
     # backref, 向User添加role属性, 可替代role.id访问Role, 得到的是对象, 而非外键值
-    users = db.relationship('User', backref='role')
+    users = db.relationship('User', backref='role', lazy='dynamic')
 
     # 重载repr函数, 给解释器的显示类型
     def __repr__(self):
@@ -81,9 +85,13 @@ class NameForm(Form):
     submit = SubmitField('Submit')
 
 
+# 为shell命令添加上下文, 注册一个make_context回调函数
+# 使在shell中可以直接使用 app, db 等
 def make_shell_context():
+    # 注册        程序      数据库 数据库模型1  数据库模型2
     return dict(app=app, db=db, User=User, Role=Role)
 manager.add_command('shell', Shell(make_context=make_shell_context))
+
 
 # 程序实例需要知道对每个URL请求运行哪些代码, 所以保存一个URL到Python函数的映射关系
 # 处理URL和函数间关系的程序称为路由
@@ -93,13 +101,18 @@ manager.add_command('shell', Shell(make_context=make_shell_context))
 def index():
     form = NameForm()
     if form.validate_on_submit():
-        old_name = session.get('name')
-        if old_name is not None and old_name != form.name.data:
-            flash('Looks like you have changed your name!')
+        user = User.query.filter_by(username=form.name.data).first()
+        if user is None:
+            user = User(username=form.name.data)
+            db.session.add(user)
+            session['known'] = False
+        else:
+            session['known'] = True
         session['name'] = form.name.data
-        return redirect(url_for('index'))
         form.name.data = ''
-    return render_template('index.html', form=form, name=session.get('name'))
+        return redirect(url_for('index'))
+    return render_template('index.html', form=form, name=session.get('name'),
+                           known=session.get('known', False))
 
 
 # 动态路由
