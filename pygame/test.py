@@ -1,8 +1,6 @@
-myd = {'1': 'a', '2': 'b'}
+import pygame
+from pygame.locals import *
+from random import randint
 
-for x in list(myd.values()):
-    print(x)
-# print(myd)
-# print(myd.keys)
-print(list(myd.values()))
-# print(myd.items)
+print(pygame.font.get_default_font())
+print(sorted(pygame.font.get_fonts()))
