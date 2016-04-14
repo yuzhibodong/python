@@ -12,6 +12,7 @@ from flask.ext.bootstrap import Bootstrap
 from flask.ext.moment import Moment
 from flask.ext.wtf import Form
 from flask.ext.migrate import Migrate, MigrateCommand
+from flask.ext.mail import Mail, Message
 from wtforms import StringField, SubmitField
 from wtforms.validators import Required
 from flask.ext.sqlalchemy import SQLAlchemy
@@ -31,6 +32,16 @@ app.config['SQLALCHEMY_DATABASE_URI'] = (
     'sqlite:///' + os.path.join(basedir, 'data.sqlite'))
 # True, 每次请求结束, 自动提交数据库中变动
 app.config['SQLALCHEMY_COMMIT_ON_TEARDOWN'] = True
+# Mail配置
+app.config['MAIL_SERVER'] = 'smtp.googlemail.com'
+app.config['MAIL_PORT'] = 587
+app.config['MAIL_USE_TLS'] = True
+app.config['MAIL_USERNAME'] = os.environ.get('MAIL_USERNAME', default=None)
+app.config['MAIL_PASSWORD'] = os.environ.get('MAIL_PASSWORD', default=None)
+app.config['FLASKY_ADMIN'] = os.environ.get('FLASKY_ADMIN', default=None)
+app.config['FLASKY_MAIL_SUBJECT_PREFIX'] = '[Flasky]'
+app.config['FLASKY_MAIL_SENDER'] = 'Flasky Admin <j5088794@gmail.com>'
+
 
 # 命令行可执行启动参数
 manager = Manager(app)
@@ -45,6 +56,8 @@ db = SQLAlchemy(app)
 # 数据库迁移
 migrate = Migrate(app=app, db=db, directory='migrations')
 manager.add_command('db', MigrateCommand)
+# 邮件
+mail = Mail(app=app)
 
 
 # 定义模型
@@ -68,7 +81,7 @@ class Role(db.Model):
 
 class User(db.Model):
     """docstring for User"""
-    __tablename__ = 'user'
+    __tablename__ = 'users'
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(64), unique=True, index=True)
     # 外键, roles表的id列
@@ -93,6 +106,14 @@ def make_shell_context():
 manager.add_command('shell', Shell(make_context=make_shell_context))
 
 
+def send_email(to, subject, template, **kwargs):
+    msg = Message(subject=app.config['FLASKY_MAIL_SUBJECT_PREFIX']+subject,
+                  recipients=[to], sender=app.config['FLASKY_MAIL_SENDER'])
+    msg.body = render_template(template+'.txt', **kwargs)
+    msg.html = render_template(template+'.html', **kwargs)
+    mail.send(msg)
+
+
 # 程序实例需要知道对每个URL请求运行哪些代码, 所以保存一个URL到Python函数的映射关系
 # 处理URL和函数间关系的程序称为路由
 # 使用修饰器把函数注册为事件的处理程序
@@ -106,6 +127,9 @@ def index():
             user = User(username=form.name.data)
             db.session.add(user)
             session['known'] = False
+            if app.config['FLASKY_ADMIN']:
+                send_email(app.config['FLASKY_ADMIN'], 'New User',
+                           'mail/new_user', user=user)
         else:
             session['known'] = True
         session['name'] = form.name.data
