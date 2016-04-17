@@ -5,6 +5,7 @@
 # @Link    : http://github.com/bluethon
 
 import os
+from threading import Thread
 
 from flask import Flask, render_template, session, redirect, url_for
 from flask.ext.script import Manager, Shell
@@ -33,14 +34,16 @@ app.config['SQLALCHEMY_DATABASE_URI'] = (
 # True, 每次请求结束, 自动提交数据库中变动
 app.config['SQLALCHEMY_COMMIT_ON_TEARDOWN'] = True
 # Mail配置
-app.config['MAIL_SERVER'] = 'smtp.googlemail.com'
-app.config['MAIL_PORT'] = 587
-app.config['MAIL_USE_TLS'] = True
+app.config['MAIL_SERVER'] = 'smtp.163.com'
+app.config['MAIL_PORT'] = 465
+app.config['MAIL_USE_TLS'] = False
+app.config['MAIL_USE_SSL'] = True
 app.config['MAIL_USERNAME'] = os.environ.get('MAIL_USERNAME', default=None)
 app.config['MAIL_PASSWORD'] = os.environ.get('MAIL_PASSWORD', default=None)
 app.config['FLASKY_ADMIN'] = os.environ.get('FLASKY_ADMIN', default=None)
+# prefix 前缀
 app.config['FLASKY_MAIL_SUBJECT_PREFIX'] = '[Flasky]'
-app.config['FLASKY_MAIL_SENDER'] = 'Flasky Admin <j5088794@gmail.com>'
+app.config['FLASKY_MAIL_SENDER'] = 'Flasky Admin <j5088794@163.com>'
 
 
 # 命令行可执行启动参数
@@ -106,12 +109,24 @@ def make_shell_context():
 manager.add_command('shell', Shell(make_context=make_shell_context))
 
 
+# 异步后台线程发送邮件
+def send_async_email(app, msg):
+    # mail.send()使用current_app, 此处为另一线程, 需要手动激活context
+    with app.app_context():
+        mail.send(msg)
+
+
 def send_email(to, subject, template, **kwargs):
+    # subject为标题内容
     msg = Message(subject=app.config['FLASKY_MAIL_SUBJECT_PREFIX']+subject,
                   recipients=[to], sender=app.config['FLASKY_MAIL_SENDER'])
     msg.body = render_template(template+'.txt', **kwargs)
     msg.html = render_template(template+'.html', **kwargs)
-    mail.send(msg)
+    # # mail.send(msg)
+    # 创建线程, 发送邮件
+    thr = Thread(target=send_async_email, args=[app, msg])
+    thr.start()
+    return thr
 
 
 # 程序实例需要知道对每个URL请求运行哪些代码, 所以保存一个URL到Python函数的映射关系
@@ -127,6 +142,7 @@ def index():
             user = User(username=form.name.data)
             db.session.add(user)
             session['known'] = False
+            # 收件人存在
             if app.config['FLASKY_ADMIN']:
                 send_email(app.config['FLASKY_ADMIN'], 'New User',
                            'mail/new_user', user=user)
