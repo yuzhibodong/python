@@ -1,9 +1,6 @@
-import pygame
-from pygame.locals import *
-from random import randint
+from math import *
 
-print(pygame.font.get_default_font())
-print(sorted(pygame.font.get_fonts()))
+print(tan(pi/4))
 
-# @Date    : 2016-04-15 10:08:04
-2
+
+2.0
