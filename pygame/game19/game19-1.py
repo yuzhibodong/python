@@ -9,8 +9,7 @@
 """
 import sys
 sys.path.append('..')
-from math import tan
-from random import randint
+from math import tan, radians
 
 import pygame
 from pygame.locals import *
@@ -22,9 +21,9 @@ CUBE_SIZE = 300
 
 
 # 计算视距, fov为视角大小
-def calculate_veiwing_distance(fov, screen_width):
-    # tand等用的弧度
-    d = (screen_width / 2.0) * tan(fov / 2.0)
+def calculate_viewing_distance(fov, screen_width):
+    # tan等用的弧度
+    d = (screen_width / 2.0) / tan(fov / 2.0)
     return d
 
 
@@ -44,7 +43,7 @@ def run():
 
     # Field of view
     fov = 90.0
-    viewing_distance = calculate_veiwing_distance(fov, SCREEN_SIZE[0])
+    viewing_distance = calculate_viewing_distance(radians(fov), SCREEN_SIZE[0])
 
     # 边沿的一系列点
     for x in range(0, CUBE_SIZE + 1, 20):
@@ -57,6 +56,7 @@ def run():
                 edge_z = (z == 0 or z == CUBE_SIZE)
 
                 if sum((edge_x, edge_y, edge_z)) >= 2:
+                    # 每个点相对正方体中心的坐标
                     point_x = float(x) - CUBE_SIZE / 2
                     point_y = float(y) - CUBE_SIZE / 2
                     point_z = float(z) - CUBE_SIZE / 2
@@ -66,8 +66,10 @@ def run():
     # 以z序存储, 类似于css中的z-index
     def point_z(point):
         return point.z
+    # z值逆序存储
     points.sort(key=point_z, reverse=True)
 
+    # 中心点
     center_x, center_y = SCREEN_SIZE
     center_x /= 2
     center_y /= 2
@@ -93,7 +95,7 @@ def run():
         time_passed = clock.tick()
         time_passed_second = time_passed / 1000.0
 
-        direction = Vec3d()
+        direction = Vec3d((0, 0, 0))
         if pressed_keys[K_LEFT]:
             direction.x = -1.0
         elif pressed_keys[K_RIGHT]:
@@ -110,24 +112,29 @@ def run():
             direction.z = -1.0
 
         if pressed_keys[K_w]:
+            # 保证不超过179°
             fov = min(179.0, fov+1.0)
             w = SCREEN_SIZE[0]
             # radians()角度转弧度
-            viewing_distance = calculate_veiwing_distance(radians(fov), w)
+            viewing_distance = calculate_viewing_distance(radians(fov), w)
         elif pressed_keys[K_s]:
             fov = max(1.0, fov-1.0)
             w = SCREEN_SIZE[0]
-            viewing_distance = calculate_veiwing_distance(radians(fov), w)
+            viewing_distance = calculate_viewing_distance(radians(fov), w)
 
         # 相机位置 = 方向 * 速度 * 时间
         camera_position += direction * camera_speed * time_passed_second
 
         # 绘制点
         for point in points:
+            # 相对坐标系, 以正方体中心为原点
             x, y, z = point - camera_position
             if z > 0:
                 x = x * viewing_distance / z
+                # 屏幕向下为正方向
                 y = -y * viewing_distance / z
+                # 屏幕左上角为原点
+                # 正方体坐标(相对坐标)+世界坐标(绝对坐标), 完成转换
                 x += center_x
                 y += center_y
                 screen.blit(ball, (x-ball_center_x, y-ball_center_y))
