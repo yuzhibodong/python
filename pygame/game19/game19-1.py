@@ -67,6 +67,7 @@ def run():
     def point_z(point):
         return point.z
     # z值逆序存储
+    # blit时, 离摄像机近的后画, 让显示效果好看点
     points.sort(key=point_z, reverse=True)
 
     # 中心点
@@ -116,6 +117,7 @@ def run():
             fov = min(179.0, fov+1.0)
             w = SCREEN_SIZE[0]
             # radians()角度转弧度
+            # 相机到虚拟前屏幕的距离
             viewing_distance = calculate_viewing_distance(radians(fov), w)
         elif pressed_keys[K_s]:
             fov = max(1.0, fov-1.0)
@@ -130,6 +132,7 @@ def run():
             # 相对坐标系, 以正方体中心为原点
             x, y, z = point - camera_position
             if z > 0:
+                # 相似三角形原理
                 x = x * viewing_distance / z
                 # 屏幕向下为正方向
                 y = -y * viewing_distance / z
@@ -143,6 +146,7 @@ def run():
         diagram_width = SCREEN_SIZE[0] / 4
         col = (50, 255, 50)
         diagram_points = []
+        # 加入左上角的示意图
         diagram_points.append((diagram_width/2, 100+viewing_distance/4))
         diagram_points.append((0, 100))
         diagram_points.append((diagram_width, 100))
