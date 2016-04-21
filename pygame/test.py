@@ -1,6 +1,5 @@
-from math import *
+import pygame
 
-print(tan(pi/4))
+pygame.init()
 
-
-2.0
+print(pygame.mixer.get_num_channels())
