@@ -118,11 +118,11 @@ def send_async_email(app, msg):
 
 def send_email(to, subject, template, **kwargs):
     # subject为标题内容
-    msg = Message(subject=app.config['FLASKY_MAIL_SUBJECT_PREFIX']+subject,
+    msg = Message(subject=app.config['FLASKY_MAIL_SUBJECT_PREFIX'] + subject,
                   recipients=[to], sender=app.config['FLASKY_MAIL_SENDER'])
-    msg.body = render_template(template+'.txt', **kwargs)
-    msg.html = render_template(template+'.html', **kwargs)
-    # # mail.send(msg)
+    msg.body = render_template(template + '.txt', **kwargs)
+    msg.html = render_template(template + '.html', **kwargs)
+    # mail.send(msg)
     # 创建线程, 发送邮件
     thr = Thread(target=send_async_email, args=[app, msg])
     thr.start()
