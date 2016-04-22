@@ -1,5 +1,13 @@
+import os
 import pygame
+from pygame.locals import *
 
-pygame.init()
+# print(os.listdir(os.path.join('D:/', 'github')))
+# print(os.path.join('D:/', 'github'))
+# print(os.scandir(os.path.join('D:/', 'github')))
 
-print(pygame.mixer.get_num_channels())
+# print(NOEVENT, ...)
+print(type(ACTIVEEVENT), ...)
+print(pygame.event.EventType.type, ...)
+
+print(-1 % 5, ...)
