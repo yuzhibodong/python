@@ -11,8 +11,7 @@ from flask import Blueprint
 
 
 #               蓝本名称, 蓝本所在包或模块
-main = Blueprint('main', __name__)
+main = Blueprint(name='main1', import_name=__name__)
 
+# 放到main下面, 防止循环导入?
 from . import views, errors
-
-

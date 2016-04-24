@@ -23,8 +23,9 @@ class Config:
     # 发送者
     FLASKY_MAIL_SENDER = 'Flasky Admin <j5088794@163.com>'
     # 管理员, 接收者
-    FLASKY_ADMIN = os.environ.get('FLASKY_ADMIN', default=None)
+    FLASKY_ADMIN = os.environ.get('FLASKY_ADMIN', default='j5088794@163.com')
 
+    # 基类为空
     # 配置类可以实例化, 执行对当前环境变量的配置初始化
     @staticmethod
     def init_app(app):
@@ -40,6 +41,9 @@ class DevelopmentConfig(Config):
     MAIL_PASSWORD = os.environ.get('MAIL_PASSWORD', default=None)
     SQLALCHEMY_DATABASE_URI = os.environ.get('DEV_DATABASE_URL') or (
         'sqlite:///' + os.path.join(basedir, 'data-dev.sqlite'))
+    # 如果设置成True，Flask-SQLAlchemy 将会追踪对象的修改并且发送信号。这需要额外的内存
+    # 2.1中默认None, 未来默认False
+    SQLALCHEMY_TRACK_MODIFICATIONS = False
 
 
 class TestingConfig(Config):
