@@ -38,6 +38,12 @@ def create_app(config_name):
     # 蓝本中定义的路由处于休眠状态, 直到蓝本注册到app上后, 路由才真正成为app的一部分
     app.register_blueprint(main_blueprint)
 
+    from .auth import auth as auth_blueprint
+    # 可选参数 url_prefix
+    # 注册后蓝本中定义的所有路由都会加上指定前缀, 即 '/auth'
+    # eg. /login 注册位 /auth/login, 完整URL->http://localhost:5000/auth/login
+    app.register_blueprint(auth_blueprint, url_prefix='/auth')
+
     # 附加路由和自定义的错误页面
     # 已被分解到main中
 
