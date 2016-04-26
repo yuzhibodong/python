@@ -10,6 +10,7 @@ from flask.ext.bootstrap import Bootstrap
 from flask.ext.mail import Mail
 from flask.ext.moment import Moment
 from flask.ext.sqlalchemy import SQLAlchemy
+from flask.ext.login import LoginManager
 
 from config import config
 
@@ -20,6 +21,11 @@ bootstrap = Bootstrap()
 mail = Mail()
 moment = Moment()
 db = SQLAlchemy()
+
+login_manager = LoginManager()
+login_manager.session_protection = 'strong'
+# 设置登陆页面的端点           蓝本名称.路由
+login_manager.login_view = 'auth.login'
 
 
 def create_app(config_name):
@@ -32,6 +38,7 @@ def create_app(config_name):
     mail.init_app(app)
     moment.init_app(app)
     db.init_app(app)
+    login_manager.init_app(app)
 
     # 导入蓝本, 开始定义路由, 因为否则无法使用app.route等修饰器
     from .main import main as main_blueprint
