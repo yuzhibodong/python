@@ -1,13 +1,9 @@
-import os
+same = '哈哈'.encode('utf-8')
+
+print(type(same), ...)
+print(repr(same), ...)
+
 import pygame
 from pygame.locals import *
 
-# print(os.listdir(os.path.join('D:/', 'github')))
-# print(os.path.join('D:/', 'github'))
-# print(os.scandir(os.path.join('D:/', 'github')))
-
-# print(NOEVENT, ...)
-print(type(ACTIVEEVENT), ...)
-print(pygame.event.EventType.type, ...)
-
-print(-1 % 5, ...)
+print(sorted(pygame.font.get_fonts()))
