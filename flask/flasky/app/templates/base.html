@@ -32,6 +32,15 @@
                 <ul class="nav navbar-nav">
                     <li><a href="/">Home</a></li>
                 </ul>
+                {# 定义右上角登陆 #}
+                <ul class="nav navbar-nav navbar-right">
+                    {# current_user由FLask-Login定义, 在视图和模板中自动可用 #}
+                    {% if current_user.is_authenticated %}
+                        <li><a href="{{ url_for('auth.logout') }}">Sign Out</a></li>
+                    {% else %}
+                        <li><a href="{{ url_for('auth.login') }}">Sign In</a></li>
+                    {% endif %}
+                </ul>
             </div>
         </div>
     </div>

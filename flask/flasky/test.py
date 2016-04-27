@@ -1,1 +1,2 @@
-print('%s' % '1\t2')
+print('ss', end="")
+print('ss',)
