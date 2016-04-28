@@ -1,6 +1,25 @@
-import io, base64
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+# @Date    : 2016-04-28 13:33:25
+# @Author  : Bluethon (j5088794@gmail.com)
+# @Link    : http://github.com/bluethon
 
-ball_base64 = """iVBORw0KGgoAAAANSUhEUgAAABkAAAAZCAYAAADE6YVjAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJ
+"""
+精灵示例程序
+"""
+
+import io
+import base64
+import pygame
+from pygame.locals import *
+
+
+class Ball(pygame.sprite.Sprite):
+    """docstring for Ball"""
+
+    def __init__(self, color, initial_position):
+        super(Ball, self).__init__()
+        ball_base64 = """iVBORw0KGgoAAAANSUhEUgAAABkAAAAZCAYAAADE6YVjAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJ
 bWFnZVJlYWR5ccllPAAABBJJREFUeNqsVj2PG1UUvfPp8XictXfHa+9mlyJCNEQRWiToqACJAgGC
 LqJNlQZR0IFEj8RPSJkGGooUpEWJkGhR0tAAElI2tsfjjxnPjIdz7oyDF2wSUK72yN43793z7rkf
 Y8N2HFmbbVliGIYiyzIpy1Isy3oHeMswzLOyXJ2tVit9VhTFAxz5Cfge+A7IZIcZmySObQudwIE0
@@ -20,23 +39,21 @@ zh4mmLOIBAkO6fjAgESdV1MYiV4kiUZHRDjD3E0Qza580D+rjsUdAQEj4fRl8wUkqBttPeo5RlJI
 uB71jIASc8D+i4W8IoX8CviC5cuI+JlgpLsgcF1ng6RQyaoX1oWX1i67DTxe9w+9/EHW9VOrngCW
 ZfNFpmvVWOfUzZ/mfG0HwHBz4ZV1kz8nvLuL+YPnRPDJ00J8A/j9fzrnW+sjeUbjbP8amDyj86z+
 tXL5PwzOC4njj4K3gavA8cazczYacLd+p/+6y8mfAgwAsRuLfp/zVLMAAAAASUVORK5CYII="""
+        # 1. string[包含base64](string)转码为二进制string[base64](byte string)
+        # 2. base64解码, 生成二进制数据(binary data)
+        ball_bin = base64.decodestring(ball_base64.encode())
+        # BytesIO接受[initial_bytes](bytes data), 生成类文件可读写对象
+        ball_obj = io.BytesIO(ball_bin)
+        self.image = pygame.image.load(ball_obj).convert_alpha()
+        self.rect = self.image.fill(color, None, BLEND_ADD)
+        self.rect.topleft = initial_position
 
-ball_base64_encode = ball_base64.encode()
-# print(ball_base64_encode, ...)
 
-ball_io = base64.decodestring(ball_base64_encode)
-print(ball_io, ...)
+pygame.init()
+screen = pygame.display.set_mode((350, 350))
 
-# file = io.StringIO(ball_io)
-
-# print((file), ...)
-
-# print(b"hello", ...)
-# print("hello".encode(), ...)
-# b64_string = base64.b64encode("hello".encode())
-
-# print(b64_string, ...)
-
-# d64_string = base64.decodestring(b64_string)
-
-# print(d64_string.decode(), ...)
+ball = Ball((255, 0, 0), (100, 100))
+screen.blit(ball.image, ball.rect)
+pygame.display.update()
+while pygame.event.poll().type != KEYDOWN:
+    pygame.time.delay(10)
