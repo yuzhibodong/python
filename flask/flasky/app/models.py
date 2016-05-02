@@ -24,6 +24,7 @@ class Role(db.Model):
         return '<Role %r>' % self.name
 
 
+# 继承UserMinxin, 里面包含了
 class User(UserMixin, db.Model):
     __tablename__ = 'users'
     id = db.Column(db.Integer, primary_key=True)
@@ -49,7 +50,7 @@ class User(UserMixin, db.Model):
         return '<User %r>' % self.username
 
 
-# 加载用户的回调函数?
+# 加载用户的回调函数
 @login_manager.user_loader
 def load_user(user_id):
     return User.query.get(int(user_id))
