@@ -11,6 +11,7 @@ from flask.ext.login import login_user, logout_user, login_required
 from . import auth
 from .. import db
 from ..models import User
+from ..email import send_email
 from .forms import LoginForm, RegistrationForm
 
 
@@ -30,7 +31,7 @@ def login():
     return render_template('auth/login.html', form=form)
 
 
-@auth.route('logout')
+@auth.route('/logout')
 @login_required
 def logout():
     # 调用Flask-Login的函数, 删除并重设会话
@@ -40,13 +41,20 @@ def logout():
 
 
 # 注册
-@auth.route('register', methods=['GET', 'POST'])
+@auth.route('/register', methods=['GET', 'POST'])
 def register():
     form = RegistrationForm()
     if form.validate_on_submit():
         user = User(email=form.email.data,
                     username=form.username.data, password=form.password.data)
         db.session.add(user)
-        flash('You can now login.')
-        return redirect(url_for('auth.login'))
+        # 提交数据库后才生成ID, 所以不能延后自动提交, 需手动
+        db.session.commit()
+        # 生成token
+        token = user.generate_confirmation_token()
+        # 发送确认邮件
+        send_email(user.email, 'Confirm Your Account',
+                   'auth/email/confirm', user=user, token=token)
+        flash('A confirmation email has been sent to you by email.')
+        return redirect(url_for('main1.index'))
     return render_template('auth/register.html', form=form)
