@@ -63,8 +63,10 @@ def register():
 @auth.route('confirm/<token>')
 @login_required
 def confirm(token):
+    # 已验证过, 直接重定向到主页
     if current_user.confirmed():
         return redirect(url_for('main1.index'))
+    # 验证
     if current_user.confirm(token):
         flash('You have confirmed your account. Thanks!')
     else:
