@@ -6,13 +6,14 @@
 
 
 from flask import render_template, redirect, request, url_for, flash
-from flask.ext.login import login_user, logout_user, login_required, current_user
+from flask.ext.login import login_user, logout_user, login_required, \
+    current_user
 
 from . import auth
 from .. import db
 from ..models import User
 from ..email import send_email
-from .forms import LoginForm, RegistrationForm
+from .forms import LoginForm, RegistrationForm, ChangePasswordForm
 
 
 @auth.route('/login', methods=['GET', 'POST'])
@@ -36,7 +37,7 @@ def login():
 def logout():
     # 调用Flask-Login的函数, 删除并重设会话
     logout_user()
-    flash('You have benn logged out.')
+    flash('You have been logged out.')
     return redirect(url_for('main1.index'))
 
 
@@ -56,17 +57,65 @@ def register():
         send_email(user.email, 'Confirm Your Account',
                    'auth/email/confirm', user=user, token=token)
         flash('A confirmation email has been sent to you by email.')
-        return redirect(url_for('main1.index'))
+        return redirect(url_for('auth.login'))
     return render_template('auth/register.html', form=form)
 
 
-@auth.route('confirm/<token>')
+@auth.route('/confirm/<token>')
+# 要去已登录
 @login_required
 def confirm(token):
-    if current_user.confirmed():
+    if current_user.confirmed:
         return redirect(url_for('main1.index'))
     if current_user.confirm(token):
         flash('You have confirmed your account. Thanks!')
     else:
         flash('The confirmation link is invalid or has expired.')
     return redirect(url_for('main1.index'))
+
+
+# @auth.before_request钩子针对属于anth蓝本的请求
+# @auth.before_app_request钩子针对全局请求
+# 拦截满足以下条件的请求
+# 在调用原请求的视图函数前先执行如下函数
+@auth.before_app_request
+def before_request():
+    if current_user.is_authenticated \
+            and not current_user.confirmed \
+            and request.endpoint[:5] != 'auth.' \
+            and request.endpoint != 'static':
+        return redirect(url_for('auth.unconfirmed'))
+
+
+# 处理未激活的账户
+@auth.route('/unconfirmed')
+def unconfirmed():
+    if current_user.is_anonymous or current_user.confirmed:
+        return redirect(url_for('main1.index'))
+    return render_template('auth/unconfirmed.html')
+
+
+@auth.route('/confirm')
+@login_required
+def resend_confirmation():
+    token = current_user.generate_confirmation_token()
+    send_email(current_user.email, 'Confirm Your Account',
+               'auth/email/confirm', user=current_user, token=token)
+    flash('A new confirmation email has been sent to you by email.')
+    return redirect(url_for('main1.index'))
+
+
+# 修改密码
+@auth.route('/change-password', methods=['POST', 'GET'])
+@login_required
+def change_password():
+    form = ChangePasswordForm()
+    if form.validate_on_submit():
+        if current_user.verify_password(form.old_password.data):
+            current_user.password = form.password.data
+            db.session.add(current_user)
+            flash('Your password has been updated.')
+            return redirect(url_for('main1.index'))
+        else:
+            flash('Invalid password.')
+    return render_template('auth/change_password.html', form=form)
