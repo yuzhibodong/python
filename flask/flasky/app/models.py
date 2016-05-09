@@ -54,6 +54,7 @@ class User(UserMixin, db.Model):
 
     # 生成token, 默认有效1h
     def generate_confirmation_token(self, expiration=3600):
+        # 创建序列化器
         s = Serializer(current_app.config['SECRET_KEY'], expiration)
         # 用当然用户ID生成token
         return s.dumps({'confirm': self.id})
@@ -61,6 +62,7 @@ class User(UserMixin, db.Model):
     def confirm(self, token):
         s = Serializer(current_app.config['SECRET_KEY'])
         try:
+            # 还原数据
             data = s.loads(token)
         except:
             return False
@@ -68,6 +70,22 @@ class User(UserMixin, db.Model):
         if data.get('confirm') != self.id:
             return False
         self.confirmed = True
+        db.session.add(self)
+        return True
+
+    def generate_reset_token(self, expiration=3600):
+        s = Serializer(current_app.config['SECRET_KEY'], expiration)
+        return s.dumps({'reset': self.id})
+
+    def reset_password(self, token, new_password):
+        s = Serializer(current_app.config['SECRET_KEY'])
+        try:
+            data = s.loads(token)
+        except:
+            return False
+        if data.get('reset') != self.id:
+            return False
+        self.password = new_password
         db.session.add(self)
         return True
 

@@ -13,7 +13,8 @@ from . import auth
 from .. import db
 from ..models import User
 from ..email import send_email
-from .forms import LoginForm, RegistrationForm, ChangePasswordForm
+from .forms import LoginForm, RegistrationForm, ChangePasswordForm, \
+    PasswordResetRequestForm, PasswordResetForm
 
 
 @auth.route('/login', methods=['GET', 'POST'])
@@ -65,8 +66,10 @@ def register():
 # 要去已登录
 @login_required
 def confirm(token):
+    # 已验证过, 直接重定向到主页
     if current_user.confirmed:
         return redirect(url_for('main1.index'))
+    # 验证
     if current_user.confirm(token):
         flash('You have confirmed your account. Thanks!')
     else:
@@ -119,3 +122,14 @@ def change_password():
         else:
             flash('Invalid password.')
     return render_template('auth/change_password.html', form=form)
+
+
+@auth.route('/reset', methods=['GET', 'POST'])
+def password_reset_request():
+    if not current_user.is_anonymous:
+        return redirect(url_for('main1.index'))
+    form = PasswordResetRequestForm()
+    if form.validate_on_submit():
+        user = User.query.filter_by(email=form.email.data).first()
+        if user:
+            token = user.ge
