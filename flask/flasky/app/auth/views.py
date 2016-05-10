@@ -124,6 +124,7 @@ def change_password():
     return render_template('auth/change_password.html', form=form)
 
 
+# 要求重置密码
 @auth.route('/reset', methods=['GET', 'POST'])
 def password_reset_request():
     if not current_user.is_anonymous:
@@ -133,10 +134,11 @@ def password_reset_request():
         user = User.query.filter_by(email=form.email.data).first()
         if user:
             token = user.generate_reset_token()
-            send_email(user.name, 'Reset Your Password', 'auth/email/reset_password',
-                       user=user, token=token, next=request.args.get('next'))
+            send_email(
+                user.email, 'Reset Your Password', 'auth/email/reset_password',
+                user=user, token=token, next=request.args.get('next'))
         flash('An email with instructions to reset your password has been '
-              'sent to you.')
+              'sent ot you.')
         return redirect(url_for('auth.login'))
     return render_template('auth/reset_password.html', form=form)
 
@@ -170,3 +172,21 @@ def change_email(token):
     else:
         flash('Invalid request.')
     return redirect(url_for('main1.index'))
+
+
+# 重设密码
+@auth.route('/reset/<token>', methods=['GET', 'POST'])
+def password_reset(token):
+    if not current_user.is_anonymous:
+        return redirect(url_for('main1.index'))
+    form = PasswordResetForm()
+    if form.validate_on_submit():
+        user = User.query.filter_by(email=form.email.data).first()
+        if user is None:
+            return redirect(url_for('main1.index'))
+        if user.reset_password(token, form.password.data):
+            flash('Your Password has been updated.')
+            return redirect(url_for('auth.login'))
+        else:
+            return redirect(url_for('main1.index'))
+    return render_template('auth/reset_password.html', form=form)
