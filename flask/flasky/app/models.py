@@ -52,13 +52,14 @@ class User(UserMixin, db.Model):
     def verify_password(self, password):
         return check_password_hash(self.password_hash, password)
 
-    # 生成token, 默认有效1h
+    # 注册 生成token, 默认有效1h
     def generate_confirmation_token(self, expiration=3600):
         # 创建序列化器
         s = Serializer(current_app.config['SECRET_KEY'], expiration)
         # 用当然用户ID生成token
         return s.dumps({'confirm': self.id})
 
+    # 注册 确认
     def confirm(self, token):
         s = Serializer(current_app.config['SECRET_KEY'])
         try:
@@ -73,10 +74,12 @@ class User(UserMixin, db.Model):
         db.session.add(self)
         return True
 
+    # 重置密码 生成token
     def generate_reset_token(self, expiration=3600):
         s = Serializer(current_app.config['SECRET_KEY'], expiration)
         return s.dumps({'reset': self.id})
 
+    # 重置密码 设置新密码
     def reset_password(self, token, new_password):
         s = Serializer(current_app.config['SECRET_KEY'])
         try:
