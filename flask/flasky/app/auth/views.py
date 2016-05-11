@@ -17,6 +17,27 @@ from .forms import LoginForm, RegistrationForm, ChangePasswordForm, \
     PasswordResetRequestForm, PasswordResetForm, ChangeEmailForm
 
 
+# @auth.before_request钩子针对属于anth蓝本的请求
+# @auth.before_app_request钩子针对全局请求
+# 拦截满足以下条件的请求
+# 在调用原请求的视图函数前先执行如下函数
+@auth.before_app_request
+def before_request():
+    if current_user.is_authenticated \
+            and not current_user.confirmed \
+            and request.endpoint[:5] != 'auth.' \
+            and request.endpoint != 'static':
+        return redirect(url_for('auth.unconfirmed'))
+
+
+# 处理未激活的账户
+@auth.route('/unconfirmed')
+def unconfirmed():
+    if current_user.is_anonymous or current_user.confirmed:
+        return redirect(url_for('main1.index'))
+    return render_template('auth/unconfirmed.html')
+
+
 @auth.route('/login', methods=['GET', 'POST'])
 def login():
     form = LoginForm()
@@ -62,8 +83,9 @@ def register():
     return render_template('auth/register.html', form=form)
 
 
+# 激活确认
 @auth.route('/confirm/<token>')
-# 要去已登录
+# 要求登录
 @login_required
 def confirm(token):
     # 已验证过, 直接重定向到主页
@@ -77,27 +99,7 @@ def confirm(token):
     return redirect(url_for('main1.index'))
 
 
-# @auth.before_request钩子针对属于anth蓝本的请求
-# @auth.before_app_request钩子针对全局请求
-# 拦截满足以下条件的请求
-# 在调用原请求的视图函数前先执行如下函数
-@auth.before_app_request
-def before_request():
-    if current_user.is_authenticated \
-            and not current_user.confirmed \
-            and request.endpoint[:5] != 'auth.' \
-            and request.endpoint != 'static':
-        return redirect(url_for('auth.unconfirmed'))
-
-
-# 处理未激活的账户
-@auth.route('/unconfirmed')
-def unconfirmed():
-    if current_user.is_anonymous or current_user.confirmed:
-        return redirect(url_for('main1.index'))
-    return render_template('auth/unconfirmed.html')
-
-
+# 激活
 @auth.route('/confirm')
 @login_required
 def resend_confirmation():
@@ -143,6 +145,24 @@ def password_reset_request():
     return render_template('auth/reset_password.html', form=form)
 
 
+# 重设密码
+@auth.route('/reset/<token>', methods=['GET', 'POST'])
+def password_reset(token):
+    if not current_user.is_anonymous:
+        return redirect(url_for('main1.index'))
+    form = PasswordResetForm()
+    if form.validate_on_submit():
+        user = User.query.filter_by(email=form.email.data).first()
+        if user is None:
+            return redirect(url_for('main1.index'))
+        if user.reset_password(token, form.password.data):
+            flash('Your Password has been updated.')
+            return redirect(url_for('auth.login'))
+        else:
+            return redirect(url_for('main1.index'))
+    return render_template('auth/reset_password.html', form=form)
+
+
 # 修改邮箱
 @auth.route('/change-email', methods=['GET', 'POST'])
 @login_required
@@ -163,7 +183,7 @@ def change_email_request():
     return render_template('auth/change_email.html', form=form)
 
 
-# 确认邮箱
+# 修改邮箱确认
 @auth.route('/change_email/<token>')
 @login_required
 def change_email(token):
@@ -172,21 +192,3 @@ def change_email(token):
     else:
         flash('Invalid request.')
     return redirect(url_for('main1.index'))
-
-
-# 重设密码
-@auth.route('/reset/<token>', methods=['GET', 'POST'])
-def password_reset(token):
-    if not current_user.is_anonymous:
-        return redirect(url_for('main1.index'))
-    form = PasswordResetForm()
-    if form.validate_on_submit():
-        user = User.query.filter_by(email=form.email.data).first()
-        if user is None:
-            return redirect(url_for('main1.index'))
-        if user.reset_password(token, form.password.data):
-            flash('Your Password has been updated.')
-            return redirect(url_for('auth.login'))
-        else:
-            return redirect(url_for('main1.index'))
-    return render_template('auth/reset_password.html', form=form)

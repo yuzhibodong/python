@@ -64,10 +64,21 @@ class UserModelTestCase(unittest.TestCase):
         token = u1.generate_confirmation_token()
         self.assertFalse(u2.confirm(token))
 
+    # 验证token过期
     def test_expired_confirmation_token(self):
         u = User(password='cat')
         db.session.add(u)
         db.session.commit()
+        # 设置token期限为1s
         token = u.generate_confirmation_token(1)
         time.sleep(2)
         self.assertFalse(u.confirm(token))
+
+    # 测试更改密码
+    def test_valid_reset_token(self):
+        u = User(password='cat')
+        db.session.add(u)
+        db.session.commit()
+        token = u.generate_reset_token()
+        self.assertTrue(u.reset_password(token, 'dog'))
+        self.assertTrue(u.verify_password('dog'))
