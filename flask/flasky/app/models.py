@@ -17,10 +17,23 @@ from . import db
 from . import login_manager
 
 
+class Permission:
+    """ 权限常量 """
+    FOLLOW = 0x01               # 关注其他用户
+    COMMENT = 0x02              # 在他人撰写的文章中发布评论
+    WRITE_ARTICLES = 0x04       # 写文章
+    MODERATE_COMMENTS = 0x08    # 查处他人的不当评论
+    ADMINISTER = 0x80           # 管理网站
+
+
 class Role(db.Model):
     __tablename__ = 'roles'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(64), unique=True)
+    # 默认字段, 只有一个角色的default字段要设为True
+    default = db.Column(db.Boolean, default=False, index=True)
+    # 权限, 用一个整型, 表示位标志, '0b 0000 0000'
+    permissions = db.Column(db.Integer)
     users = db.relationship('User', backref='role', lazy='dynamic')
 
     def __repr__(self):
