@@ -11,7 +11,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
 # 用于登陆
 from flask import current_app
-from flask.ext.login import UserMixin
+from flask.ext.login import UserMixin, AnonymousUserMixin
 
 from . import db
 from . import login_manager
@@ -30,17 +30,43 @@ class Role(db.Model):
     __tablename__ = 'roles'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(64), unique=True)
-    # 默认字段, 只有一个角色的default字段要设为True
+    # 创建用户默认属于哪个角色, 该角色此处为True,
+    # 只有一个角色的default字段需要设为True
     default = db.Column(db.Boolean, default=False, index=True)
     # 权限, 用一个整型, 表示位标志, '0b 0000 0000'
     permissions = db.Column(db.Integer)
     users = db.relationship('User', backref='role', lazy='dynamic')
 
+    # 静态方法, 类方法, 与实例无关, built-in函数, 不默认传入self
+    @staticmethod
+    def insert_roles():
+        roles = {
+            # 位或操作
+            'User': (Permission.FOLLOW |
+                     Permission.COMMENT |
+                     Permission.WRITE_ARTICLES, True),
+            'Moderator': (Permission.FOLLOW |
+                          Permission.COMMENT |
+                          Permission.WRITE_ARTICLES |
+                          Permission.MODERATE_COMMENTS, False),
+            'Administrator': (0xff, False)
+        }
+        # 查询角色是否存在, 不存在则创建, 即更新操作
+        for r in roles:
+            role = Role.query.filter_by(name=r).first()
+            if role is None:
+                role = Role(name=r)
+            # roles字典中key=r, value是个tuple, tuple中第一个, 即位或值
+            role.permissions = roles[r][0]
+            role.default = roles[r][1]
+            db.session.add(role)
+        db.session.commit()
+
     def __repr__(self):
         return '<Role %r>' % self.name
 
 
-# 继承UserMinxin, 里面包含了
+# 继承UserMinxin, 里面包含了is_authenticated等的默认实现
 class User(UserMixin, db.Model):
     __tablename__ = 'users'
     id = db.Column(db.Integer, primary_key=True)
