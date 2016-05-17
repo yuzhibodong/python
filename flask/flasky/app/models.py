@@ -77,6 +77,17 @@ class User(UserMixin, db.Model):
     # 是否邮件激活
     confirmed = db.Column(db.Boolean, default=False)
 
+    def __init__(self, **kwargs):
+        super(User, self).__init__(**kwargs)
+        # 若基类未定义角色
+        if self.role is None:
+            # 根据邮箱自动设为管理员
+            if self.email == current_app.config['FLASKY_ADMIN']:
+                self.role = Role.query.filter_by(permissions=0xff).first()
+            # 否则设为默认角色(由角色default属性决定)
+            if self.role is None:
+                self.role = Role.query.filter_by(default=True)
+
     # 只读属性, 密码散列, 原密码不存在, 返回错误
     @property
     def password(self):
@@ -154,8 +165,31 @@ class User(UserMixin, db.Model):
         db.session.add(self)
         return True
 
+    def can(self, permissions):
+        """ 用户角色权限与 Permission.xx 验证 """
+        # 位与操作
+        return self.role is not None and \
+            (self.role.permissions & permissions) == permissions
+
+    # 检查管理员权限功能常用, 单独实现
+    def is_administrator(self):
+        return self.can(Permission.ADMINISTER)
+
+    @property
     def __repr__(self):
         return '<User %r>' % self.username
+
+
+# 一致性考虑, 实现匿名用户的验证方法
+class AnonymousUser(AnonymousUserMixin):
+    def can(self, permissions):
+        False
+
+    def is_administrator(self):
+        False
+
+# 匿名用户设为未登录时current_user的值
+login_manager.anonymous_user = AnonymousUser
 
 
 # 加载用户的回调函数
