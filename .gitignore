@@ -8,7 +8,7 @@ flask/flasky/venv
 
 # Developer
 *.sublime-*
-*.idea
+*.idea/
 
 # SQLite databases
 *.sqlite
