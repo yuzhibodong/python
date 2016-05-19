@@ -9,7 +9,7 @@ import unittest
 import time
 
 from app import create_app, db
-from app.models import User
+from app.models import User, AnonymousUser, Role, Permission
 
 
 class UserModelTestCase(unittest.TestCase):
@@ -19,7 +19,10 @@ class UserModelTestCase(unittest.TestCase):
         # 激活上下文, 确保能在测试中使用current_app
         self.app_context = self.app.app_context()
         self.app_context.push()
+        # 创建表
         db.create_all()
+        # 创建角色
+        Role.insert_roles()
 
     def tearDown(self):
         db.session.remove()
@@ -126,3 +129,15 @@ class UserModelTestCase(unittest.TestCase):
         token = u2.generate_email_change_token('john@example.com')
         self.assertFalse(u2.change_email(token))
         self.assertTrue(u2.email == 'susan@example.org')
+
+    # 测试角色和权限
+    def test_roles_and_permissions(self):
+        u = User(email='john@example.com', password='cat')
+        self.assertTrue(u.can(Permission.WRITE_ARTICLES))
+        self.assertFalse(u.can(Permission.MODERATE_COMMENTS))
+
+    # 测试匿名用户权限
+    def test_anonymous_user(self):
+        u = AnonymousUser()
+        self.assertFalse(u.can(Permission.FOLLOW))
+

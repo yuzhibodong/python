@@ -86,7 +86,7 @@ class User(UserMixin, db.Model):
                 self.role = Role.query.filter_by(permissions=0xff).first()
             # 否则设为默认角色(由角色default属性决定)
             if self.role is None:
-                self.role = Role.query.filter_by(default=True)
+                self.role = Role.query.filter_by(default=True).first()
 
     # 只读属性, 密码散列, 原密码不存在, 返回错误
     @property
