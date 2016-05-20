@@ -5,6 +5,7 @@
 # @Link    : http://github.com/bluethon
 
 
+from datetime import datetime
 # 使用Werkzeug中security模块实现 密码散列
 from werkzeug.security import generate_password_hash, check_password_hash
 # 令牌
@@ -76,6 +77,18 @@ class User(UserMixin, db.Model):
     role_id = db.Column(db.Integer, db.ForeignKey('roles.id'))
     # 是否邮件激活
     confirmed = db.Column(db.Boolean, default=False)
+    # 姓名
+    name = db.Column(db.String(64))
+    # 所在地
+    location = db.Column(db.String(64))
+    # 自我介绍
+    # db.Text()与db.String()区别为前者不需要指定长度
+    about_me = db.Column(db.Text())
+    # 注册日期
+    member_since = db.Column(db.DateTime(), default=datetime.utcnow)
+    # 最后访问日期
+    # default参数可接受函数, 所以datetime.utcnow没有(), 调用时生成当时时间
+    last_seen = db.Column(db.DateTime(), default=datetime.utcnow)
 
     def __init__(self, **kwargs):
         super(User, self).__init__(**kwargs)
@@ -174,6 +187,11 @@ class User(UserMixin, db.Model):
     # 检查管理员权限功能常用, 单独实现
     def is_administrator(self):
         return self.can(Permission.ADMINISTER)
+
+    def ping(self):
+        更新用户最后访问时间
+        self.last_seen = datetime.utcnow()
+        db.session.add(self)
 
     @property
     def __repr__(self):

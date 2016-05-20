@@ -6,7 +6,7 @@
 
 
 from flask import render_template, redirect, request, url_for, flash
-from flask.ext.login import login_user, logout_user, login_required, \
+from flask_login import login_user, logout_user, login_required, \
     current_user
 
 from . import auth
@@ -17,17 +17,19 @@ from .forms import LoginForm, RegistrationForm, ChangePasswordForm, \
     PasswordResetRequestForm, PasswordResetForm, ChangeEmailForm
 
 
+# 在调用原请求的视图函数前先执行如下函数
+# 拦截满足以下条件的请求
 # @auth.before_request钩子针对属于anth蓝本的请求
 # @auth.before_app_request钩子针对全局请求
-# 拦截满足以下条件的请求
-# 在调用原请求的视图函数前先执行如下函数
 @auth.before_app_request
 def before_request():
-    if current_user.is_authenticated \
-            and not current_user.confirmed \
-            and request.endpoint[:5] != 'auth.' \
-            and request.endpoint != 'static':
-        return redirect(url_for('auth.unconfirmed'))
+    if current_user.is_authenticated:
+        # 更新用户最后访问日期
+        current_user.ping()
+        if not current_user.confirmed \
+                and request.endpoint[:5] != 'auth.' \
+                and request.endpoint != 'static':
+            return redirect(url_for('auth.unconfirmed'))
 
 
 # 处理未激活的账户

@@ -31,4 +31,3 @@ def permission_required(permission):
 # 检查管理员权限
 def admin_required(f):
     return permission_required(Permission.ADMINISTER)(f)
-
