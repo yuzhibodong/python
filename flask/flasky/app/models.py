@@ -67,7 +67,7 @@ class Role(db.Model):
         return '<Role %r>' % self.name
 
 
-# 继承UserMinxin, 里面包含了is_authenticated等的默认实现
+# 继承UserMixin, 里面包含了is_authenticated等的默认实现
 class User(UserMixin, db.Model):
     __tablename__ = 'users'
     id = db.Column(db.Integer, primary_key=True)
@@ -189,7 +189,7 @@ class User(UserMixin, db.Model):
         return self.can(Permission.ADMINISTER)
 
     def ping(self):
-        更新用户最后访问时间
+        # 更新用户最后访问时间
         self.last_seen = datetime.utcnow()
         db.session.add(self)
 

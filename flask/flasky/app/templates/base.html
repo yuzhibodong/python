@@ -31,10 +31,15 @@
             <div class="navbar-collapse collapse">
                 <ul class="nav navbar-nav">
                     <li><a href="{{ url_for('main1.index') }}">Home</a></li>
+                    {% if current_user.is_authenticated %}
+                        <li>
+                            <a href="{{ url_for('main1.user', username=current_user.username) }}">Profile</a>
+                        </li>
+                    {% endif %}
                 </ul>
                 {# 定义右上角登陆 #}
                 <ul class="nav navbar-nav navbar-right">
-                    {# current_user由FLask-Login定义, 在视图和模板中自动可用 #}
+                    {# current_user由Flask-Login定义, 在视图和模板中自动可用 #}
                     {% if current_user.is_authenticated %}
                     <li class="dropdown">
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown">Account <b class="caret"></b></a>
