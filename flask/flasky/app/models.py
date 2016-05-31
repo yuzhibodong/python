@@ -4,14 +4,15 @@
 # @Author  : Bluethon (j5088794@gmail.com)
 # @Link    : http://github.com/bluethon
 
-
+# 用于计算用户邮箱的哈希值
+import hashlib
 from datetime import datetime
 # 使用Werkzeug中security模块实现 密码散列
 from werkzeug.security import generate_password_hash, check_password_hash
 # 令牌
 from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
 # 用于登陆
-from flask import current_app
+from flask import current_app, request
 from flask_login import UserMixin, AnonymousUserMixin
 
 from . import db
@@ -20,11 +21,11 @@ from . import login_manager
 
 class Permission:
     """ 权限常量 """
-    FOLLOW = 0x01               # 关注其他用户
-    COMMENT = 0x02              # 在他人撰写的文章中发布评论
-    WRITE_ARTICLES = 0x04       # 写文章
-    MODERATE_COMMENTS = 0x08    # 查处他人的不当评论
-    ADMINISTER = 0x80           # 管理网站
+    FOLLOW = 0x01  # 关注其他用户
+    COMMENT = 0x02  # 在他人撰写的文章中发布评论
+    WRITE_ARTICLES = 0x04  # 写文章
+    MODERATE_COMMENTS = 0x08  # 查处他人的不当评论
+    ADMINISTER = 0x80  # 管理网站
 
 
 class Role(db.Model):
@@ -89,6 +90,8 @@ class User(UserMixin, db.Model):
     # 最后访问日期
     # default参数可接受函数, 所以datetime.utcnow没有(), 调用时生成当时时间
     last_seen = db.Column(db.DateTime(), default=datetime.utcnow)
+    # 头像MD5值
+    avatar_hash = db.Column(db.String(32))
 
     def __init__(self, **kwargs):
         super(User, self).__init__(**kwargs)
@@ -100,6 +103,10 @@ class User(UserMixin, db.Model):
             # 否则设为默认角色(由角色default属性决定)
             if self.role is None:
                 self.role = Role.query.filter_by(default=True).first()
+        # 计算邮箱md5值
+        if self.email is not None and self.avatar_hash is None:
+            self.avatar_hash = hashlib.md5(
+                self.email.encode('utf-8')).hexdigest()
 
     # 只读属性, 密码散列, 原密码不存在, 返回错误
     @property
@@ -175,14 +182,15 @@ class User(UserMixin, db.Model):
         if self.query.filter_by(email=new_email).first() is not None:
             return False
         self.email = new_email
+        self.avatar_hash = hashlib.md5(self.email.encode('utf-8')).hexdigest()
         db.session.add(self)
         return True
 
     def can(self, permissions):
         """ 用户角色权限与 Permission.xx 验证 """
         # 位与操作
-        return self.role is not None and \
-            (self.role.permissions & permissions) == permissions
+        return self.role is not None and (self.role.permissions &
+                                          permissions) == permissions
 
     # 检查管理员权限功能常用, 单独实现
     def is_administrator(self):
@@ -192,6 +200,16 @@ class User(UserMixin, db.Model):
         # 更新用户最后访问时间
         self.last_seen = datetime.utcnow()
         db.session.add(self)
+
+    def gravatar(self, size=100, default='identicon', rating='g'):
+        if request.is_secure:
+            url = 'https://secure.gravatar.com/avatar'
+        else:
+            url = 'http://www.gravatar.com/avatar'
+        hash = self.avatar_hash or hashlib.md5(
+            self.email.encode('utf-8')).hexdigest()
+        return '{url}/{hash}?s={size}&d={default}&r={rating}'.format(
+            url=url, hash=hash, size=size, default=default, rating=rating)
 
     @property
     def __repr__(self):
@@ -205,6 +223,7 @@ class AnonymousUser(AnonymousUserMixin):
 
     def is_administrator(self):
         False
+
 
 # 匿名用户设为未登录时current_user的值
 login_manager.anonymous_user = AnonymousUser

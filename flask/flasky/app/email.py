@@ -14,6 +14,7 @@ from . import mail
 
 
 def send_async_email(app, msg):
+    # 在不同的线程中执行, 因此需要手动激活app_context
     with app.app_context():
         mail.send(msg)
 

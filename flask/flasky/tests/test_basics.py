@@ -10,12 +10,13 @@ from flask import current_app
 from app import create_app, db
 
 
-class setUp(unittest.TestCase):
+class SetUp(unittest.TestCase):
     def setUp(self):
         # 使用测试配置创建程序
         self.app = create_app('testing')
-        # 激活上下文, 确保能在测试中使用current_app
         self.app_context = self.app.app_context()
+        # 激活上下文, 确保能在测试中使用current_app
+        # push或者with激活, pop关闭
         self.app_context.push()
         db.create_all()
 

@@ -19,7 +19,10 @@ from ..models import Permission
 
 
 # 避免render_template()每次调用都添加一个模板参数
-# 上下文处理器能让变量在所有模板中全局可访问s
+# 上下文处理器能让变量在所有模板中全局可访问
+# A context processor is a function that returns a dictionary.
+# The keys and values of this dictionary are then merged with
+# the template context, for all templates in the app
 @main.app_context_processor
 def inject_permissions():
     return dict(Permission=Permission)
