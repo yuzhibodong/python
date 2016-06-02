@@ -15,8 +15,7 @@ from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
 from flask import current_app, request
 from flask_login import UserMixin, AnonymousUserMixin
 
-from . import db
-from . import login_manager
+from . import db, login_manager
 
 
 class Permission:
@@ -37,6 +36,10 @@ class Role(db.Model):
     default = db.Column(db.Boolean, default=False, index=True)
     # 权限, 用一个整型, 表示位标志, '0b 0000 0000'
     permissions = db.Column(db.Integer)
+    # users返回用户组成的列表
+    # 'User' 另一个模型名称
+    # backref, 向User中添加role属性(返回对象), 可替代role_id(返回值)访问Role模型
+    # lazy, 加载相关记录, dynamic, 不加载记录, 但提供加载记录的查询
     users = db.relationship('User', backref='role', lazy='dynamic')
 
     # 静态方法, 类方法, 与实例无关, built-in函数, 不默认传入self
@@ -74,8 +77,9 @@ class User(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(64), unique=True, index=True)
     username = db.Column(db.String(64), unique=True, index=True)
-    password_hash = db.Column(db.String(128))
+    # 外键, roles表id列
     role_id = db.Column(db.Integer, db.ForeignKey('roles.id'))
+    password_hash = db.Column(db.String(128))
     # 是否邮件激活
     confirmed = db.Column(db.Boolean, default=False)
     # 姓名
@@ -92,6 +96,7 @@ class User(UserMixin, db.Model):
     last_seen = db.Column(db.DateTime(), default=datetime.utcnow)
     # 头像MD5值
     avatar_hash = db.Column(db.String(32))
+    posts = db.relationship('Post', backref='author', lazy='dynamic')
 
     def __init__(self, **kwargs):
         super(User, self).__init__(**kwargs)
@@ -219,10 +224,10 @@ class User(UserMixin, db.Model):
 # 一致性考虑, 实现匿名用户的验证方法
 class AnonymousUser(AnonymousUserMixin):
     def can(self, permissions):
-        False
+        return False
 
     def is_administrator(self):
-        False
+        return False
 
 
 # 匿名用户设为未登录时current_user的值
@@ -233,3 +238,12 @@ login_manager.anonymous_user = AnonymousUser
 @login_manager.user_loader
 def load_user(user_id):
     return User.query.get(int(user_id))
+
+
+class Post(db.Model):
+    """ 文章类 """
+    __tablename__ = 'posts'
+    id = db.Column(db.Integer, primary_key=True)
+    body = db.Column(db.Text)
+    timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
+    author_id = db.Column(db.Integer, db.ForeignKey('users.id'))

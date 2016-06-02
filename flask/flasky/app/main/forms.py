@@ -19,7 +19,7 @@ class NameForm(Form):
     submit = SubmitField('Submit')
 
 
-class EditPorfileForm(Form):
+class EditProfileForm(Form):
     """ 用户使用的资料编辑表 """
     name = StringField('Real name', validators=[Length(0, 64)])
     location = StringField('Location', validators=[Length(0, 64)])
@@ -27,7 +27,7 @@ class EditPorfileForm(Form):
     submit = SubmitField('Submit')
 
 
-class EditPorfileAdminForm(Form):
+class EditProfileAdminForm(Form):
     """ 管理员使用的资料编辑表 """
     email = StringField('Email',
                         validators=[DataRequired(), Length(1, 64), Email()])
@@ -47,11 +47,11 @@ class EditPorfileAdminForm(Form):
 
     def __init__(self, user, *args, **kwargs):
         """"""
-        super(EditPorfileAdminForm, self).__init__(*args, **kwargs)
+        super(EditProfileAdminForm, self).__init__(*args, **kwargs)
         # 设置角色选择列表, 选项必须是元组组成的列表, 包含(标识符, 显示文本)
         # 列表按角色字母顺序排序
-        self.role.choices = [(role.id, role.name) for role in
-                             Role.query.order_by(Role.name).all()]
+        self.role.choices = [(role.id, role.name)
+                             for role in Role.query.order_by(Role.name).all()]
         self.user = user
 
     def validate_email(self, filed):
@@ -64,3 +64,9 @@ class EditPorfileAdminForm(Form):
         if filed.data != self.user.username and User.query.filter_by(
                 username=filed.data).first():
             raise ValidationError('Username already in use.')
+
+
+class PostForm(Form):
+    """ 文章表 """
+    body = TextAreaField("What's on your mind?", validators=[DataRequired()])
+    submit = SubmitField('Submit')

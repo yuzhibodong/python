@@ -9,22 +9,30 @@ from flask import render_template, redirect, url_for, abort, flash
 from flask_login import login_required, current_user
 
 from . import main
-from .forms import EditPorfileForm, EditPorfileAdminForm
+from .forms import EditProfileForm, EditProfileAdminForm, PostForm
 from .. import db
-from ..models import Role, User
+from ..models import Permission, Role, User, Post
 from ..decorators import admin_required
 
 
-@main.route('/')
+@main.route('/', methods=['GET', 'POST'])
 def index():
-    return render_template('index.html')
+    form = PostForm()
+    if current_user.can(
+            Permission.WRITE_ARTICLES) and form.validate_on_submit():
+        post = Post(body=form.body.data, author=current_user._get_current_object())
+        db.session.add(post)
+        return redirect(url_for('.index'))
+    posts = Post.query.order_by(Post.timestamp.desc()).all()
+    return render_template('index.html', form=form, posts=posts)
 
 
 @main.route('/user/<username>')
 def user(username):
-    user = User.query.filter_by(username=username).first()
-    if user is None:
-        abort(404)
+    user = User.query.filter_by(username=username).first_or_404()
+    # 被上面重构了
+    # if user is None:
+    #     abort(404)
     return render_template('user.html', user=user)
 
 
@@ -32,14 +40,14 @@ def user(username):
 @login_required
 def edit_profile():
     """ 用户编辑自己的个人信息 """
-    form = EditPorfileForm()
+    form = EditProfileForm()
     if form.validate_on_submit():
         current_user.name = form.name.data
         current_user.location = form.location.data
         current_user.about_me = form.about_me.data
         db.session.add(current_user)
-        flash('Your Profile has been updated.')
-        return redirect(url_for('.user', username=current_user.name))
+        flash('Your profile has been updated.')
+        return redirect(url_for('.user', username=current_user.username))
     form.name.data = current_user.name
     form.location.data = current_user.location
     form.about_me.data = current_user.about_me
@@ -52,7 +60,7 @@ def edit_profile():
 def edit_profile_admin(id):
     """ 管理员编辑用户的个人信息 """
     user = User.query.get_or_404(id)
-    form = EditPorfileAdminForm(user)
+    form = EditProfileAdminForm(user=user)
     if form.validate_on_submit():
         user.email = form.email.data
         user.username = form.username.data
@@ -62,7 +70,7 @@ def edit_profile_admin(id):
         user.location = form.location.data
         user.about_me = form.about_me.data
         db.session.add(user)
-        flash('Your Profile has been updated.')
+        flash('The profile has been updated.')
         return redirect(url_for('.user', username=user.username))
     form.email.data = user.email
     form.username.data = user.username

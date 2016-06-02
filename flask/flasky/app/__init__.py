@@ -31,8 +31,8 @@ login_manager.login_view = 'auth.login'
 def create_app(config_name):
     app = Flask(__name__)
     app.config.from_object(config[config_name])
-    # 原代码有, 但是init_app为空, 此时感觉没用
-    # config[config_name].init_app(app)
+    # init_app为空, 暂时没用
+    config[config_name].init_app(app)
 
     bootstrap.init_app(app)
     mail.init_app(app)
