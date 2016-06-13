@@ -20,6 +20,8 @@ def index():
     form = PostForm()
     if current_user.can(
             Permission.WRITE_ARTICLES) and form.validate_on_submit():
+        # current_user是对用户对象的轻度封装
+        # 数据库连接需要真正用户对象, 所以调用_get_current_object()方法获得
         post = Post(body=form.body.data, author=current_user._get_current_object())
         db.session.add(post)
         return redirect(url_for('.index'))
@@ -33,7 +35,8 @@ def user(username):
     # 被上面重构了
     # if user is None:
     #     abort(404)
-    return render_template('user.html', user=user)
+    posts = user.posts.order_by(Post.timestamp.desc()).all()
+    return render_template('user.html', user=user, posts=posts)
 
 
 @main.route('/edit-profile', methods=['GET', 'POST'])
