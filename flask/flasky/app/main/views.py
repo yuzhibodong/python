@@ -5,7 +5,8 @@
 # @Link    : http://github.com/bluethon
 
 
-from flask import render_template, redirect, url_for, abort, flash
+from flask import render_template, redirect, url_for, flash, request, \
+    current_app
 from flask_login import login_required, current_user
 
 from . import main
@@ -22,11 +23,21 @@ def index():
             Permission.WRITE_ARTICLES) and form.validate_on_submit():
         # current_user是对用户对象的轻度封装
         # 数据库连接需要真正用户对象, 所以调用_get_current_object()方法获得
-        post = Post(body=form.body.data, author=current_user._get_current_object())
+        post = Post(body=form.body.data,
+                    author=current_user._get_current_object())
         db.session.add(post)
         return redirect(url_for('.index'))
-    posts = Post.query.order_by(Post.timestamp.desc()).all()
-    return render_template('index.html', form=form, posts=posts)
+    # 从请求的查询字符串(request.args)中获取渲染的页数, 默认第一页
+    page = request.args.get('page', 1, type=int)
+    # 将all()方法换为paginate()方法 来显示某页的记录
+    # args: 页数, [每页显示多少], [True->404; False->null list]
+    pagination = Post.query.order_by(Post.timestamp.desc()).paginate(
+        page, per_page=current_app.config['FLASKY_POSTS_PER_PAGE'],
+        error_out=False)
+    # 当页内容
+    posts = pagination.items
+    return render_template('index.html', form=form, posts=posts,
+                           pagination=pagination)
 
 
 @main.route('/user/<username>')
@@ -35,8 +46,13 @@ def user(username):
     # 被上面重构了
     # if user is None:
     #     abort(404)
-    posts = user.posts.order_by(Post.timestamp.desc()).all()
-    return render_template('user.html', user=user, posts=posts)
+    page = request.args.get('page', 1, type=int)
+    pagination = user.posts.order_by(Post.timestamp.desc()).paginate(
+        page, per_page=current_app.config['FLASKY_POSTS_PER_PAGE'],
+        error_out=False)
+    posts = pagination.items
+    return render_template('user.html', user=user, posts=posts,
+                           pagination=pagination)
 
 
 @main.route('/edit-profile', methods=['GET', 'POST'])

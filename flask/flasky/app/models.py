@@ -36,9 +36,10 @@ class Role(db.Model):
     default = db.Column(db.Boolean, default=False, index=True)
     # 权限, 用一个整型, 表示位标志, '0b 0000 0000'
     permissions = db.Column(db.Integer)
-    # users返回用户组成的列表
+    # 定义User外键的面向对象视角, 即引用模型, 而非id值
+    # users返回用户组成的实例列表
     # 'User' 另一个模型名称
-    # backref, 向User中添加role属性(返回对象), 可替代role_id(返回值)访问Role模型
+    # backref, 向User中添加role属性(返回实例对象), 可替代role_id(返回值)访问Role实例模型
     # lazy, 加载相关记录, dynamic, 不加载记录, 但提供加载记录的查询
     users = db.relationship('User', backref='role', lazy='dynamic')
 
@@ -97,6 +98,33 @@ class User(UserMixin, db.Model):
     # 头像MD5值
     avatar_hash = db.Column(db.String(32))
     posts = db.relationship('Post', backref='author', lazy='dynamic')
+
+    @staticmethod
+    def generate_fake(count=100):
+        """
+        随机生成测试用户数据
+        $ python3 manage.py shell
+        >>> User.generate_fake()
+        """
+        from sqlalchemy.exc import IntegrityError
+        from random import seed
+        import forgery_py
+
+        seed()
+        for i in range(count):
+            u = User(email=forgery_py.internet.email_address(),
+                     username=forgery_py.internet.user_name(True),
+                     password=forgery_py.lorem_ipsum.word(),
+                     confirmed=True,
+                     name=forgery_py.name.full_name(),
+                     location=forgery_py.address.city(),
+                     about_me=forgery_py.lorem_ipsum.sentence(),
+                     member_since=forgery_py.date.date(True))
+            db.session.add(u)
+            try:
+                db.session.commit()
+            except IntegrityError:
+                db.session.rollback()
 
     def __init__(self, **kwargs):
         super(User, self).__init__(**kwargs)
@@ -247,3 +275,18 @@ class Post(db.Model):
     body = db.Column(db.Text)
     timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
     author_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+
+    @staticmethod
+    def generate_fake(count=100):
+        from random import seed, randint
+        import forgery_py
+
+        seed()
+        user_count = User.query.count()
+        for i in range(count):
+            u = User.query.offset(randint(0, user_count - 1)).first()
+            p = Post(body=forgery_py.lorem_ipsum.sentences(randint(1, 5)),
+                     timestamp=forgery_py.date.date(True),
+                     author=u)
+            db.session.add(u)
+            db.session.commit()
