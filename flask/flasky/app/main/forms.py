@@ -6,6 +6,8 @@
 
 
 from flask_wtf import Form
+from flask_pagedown.fields import PageDownField
+
 from wtforms import StringField, TextAreaField, BooleanField, SelectField, \
     SubmitField
 from wtforms.validators import DataRequired, Length, Email, Regexp
@@ -68,5 +70,6 @@ class EditProfileAdminForm(Form):
 
 class PostForm(Form):
     """ 文章表 """
-    body = TextAreaField("What's on your mind?", validators=[DataRequired()])
+    # 使用markdown字段类型
+    body = PageDownField("What's on your mind?", validators=[DataRequired()])
     submit = SubmitField('Submit')

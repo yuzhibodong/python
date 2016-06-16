@@ -7,10 +7,13 @@
 # 用于计算用户邮箱的哈希值
 import hashlib
 from datetime import datetime
+
 # 使用Werkzeug中security模块实现 密码散列
 from werkzeug.security import generate_password_hash, check_password_hash
 # 令牌
 from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
+from markdown import markdown
+import bleach
 # 用于登陆
 from flask import current_app, request
 from flask_login import UserMixin, AnonymousUserMixin
@@ -273,6 +276,7 @@ class Post(db.Model):
     __tablename__ = 'posts'
     id = db.Column(db.Integer, primary_key=True)
     body = db.Column(db.Text)
+    body_html = db.Column(db.Text)
     timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
     author_id = db.Column(db.Integer, db.ForeignKey('users.id'))
 
@@ -290,3 +294,17 @@ class Post(db.Model):
                      author=u)
             db.session.add(u)
             db.session.commit()
+
+    @staticmethod
+    def on_changed_body(target, value, oldvalue, initiator):
+        allowed_tags = ['a', 'abbr', 'acronym', 'b', 'blockquote', 'code',
+                        'em', 'i', 'li', 'ol', 'pre', 'strong', 'ul',
+                        'h1', 'h2', 'h3', 'p']
+        # linkfy 将纯文本中的URL转换成适当的<a>
+        target.body_html = bleach.linkify(bleach.clean(
+            markdown(value, output_format='html'), tags=allowed_tags,
+            strip=True))
+
+# on_changed_body函数注册在body字段上, 是SQLAlchemy 'set' 事件的监听程序
+# 当类实例的body字段设了新值, 函数会自动调用 ?暂未体会到
+db.event.listen(Post.body, 'set', Post.on_changed_body)
