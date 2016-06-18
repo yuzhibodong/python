@@ -4,9 +4,8 @@
 # @Author  : Bluethon (j5088794@gmail.com)
 # @Link    : http://github.com/bluethon
 
-
 from flask import render_template, redirect, url_for, flash, request, \
-    current_app
+    current_app, abort
 from flask_login import login_required, current_user
 
 from . import main
@@ -99,3 +98,30 @@ def edit_profile_admin(id):
     form.location.data = user.location
     form.about_me.data = user.about_me
     return render_template('edit_profile.html', form=form, user=user)
+
+
+@main.route('/post/<int:id>')
+def post(id):
+    """ 文章永久链接页面 """
+    post = Post.query.get_or_404(id)
+    # [post], 转为list, 因为_posts.html中作为列表渲染
+    return render_template('post.html', posts=[post])
+
+
+@main.route('/edit/<int:id>', methods=['GET', 'POST'])
+@login_required
+def edit(id):
+    """ 编辑文章 """
+    post = Post.query.get_or_404(id)
+    # 如果不是作者或管理员, 返回403
+    if current_user != post.author and \
+            not current_user.can(Permission.ADMINISTER):
+        abort(403)
+    form = PostForm()
+    if form.validate_on_submit():
+        post.body = form.body.data
+        db.session.add(post)
+        flash('The post has been updated.')
+        return redirect(url_for('.post', id=post.id))
+    form.body.data = post.body
+    return render_template('edit_post.html', form=form)
