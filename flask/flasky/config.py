@@ -25,6 +25,7 @@ class Config:
     # 管理员, 接收者
     FLASKY_ADMIN = os.environ.get('FLASKY_ADMIN', default='j5088794@163.com')
     FLASKY_POSTS_PER_PAGE = 10
+    FLASKY_FOLLOWERS_PER_PAGE = 50
 
     # 如果设置成True，Flask-SQLAlchemy 将会追踪对象的修改并且发送信号。这需要额外的内存
     # 2.1中默认None, 未来默认False

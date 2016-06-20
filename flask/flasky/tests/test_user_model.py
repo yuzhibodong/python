@@ -10,7 +10,7 @@ import time
 from datetime import datetime
 
 from app import create_app, db
-from app.models import User, AnonymousUser, Role, Permission
+from app.models import User, AnonymousUser, Role, Permission, Follow
 
 
 class UserModelTestCase(unittest.TestCase):
@@ -43,16 +43,19 @@ class UserModelTestCase(unittest.TestCase):
             u.password
 
     def test_password_verification(self):
+        """ 测试密码验证功能 """
         u = User(password='cat')
         self.assertTrue(u.verify_password('cat'))
         self.assertFalse(u.verify_password('dog'))
 
     def test_password_salts_are_random(self):
+        """ 测试密码加盐为随机 """
         u = User(password='cat')
         u2 = User(password='cat')
         self.assertTrue(u.password_hash != u2.password_hash)
 
     def test_valid_confirmation_token(self):
+        """ 测试有效token """
         u = User(password='cat')
         db.session.add(u)
         db.session.commit()
@@ -60,6 +63,7 @@ class UserModelTestCase(unittest.TestCase):
         self.assertTrue(u.confirm(token))
 
     def test_invalid_confirmation_token(self):
+        """ 测试无效token"""
         u1 = User(password='cat')
         u2 = User(password='dog')
         db.session.add(u1)
@@ -69,7 +73,7 @@ class UserModelTestCase(unittest.TestCase):
         self.assertFalse(u2.confirm(token))
 
     def test_expired_confirmation_token(self):
-        """ 验证token过期 """
+        """ 测试过期token """
         u = User(password='cat')
         db.session.add(u)
         db.session.commit()
@@ -79,7 +83,7 @@ class UserModelTestCase(unittest.TestCase):
         self.assertFalse(u.confirm(token))
 
     def test_valid_reset_token(self):
-        """ 测试更改密码 """
+        """ 测试有效token更改密码 """
         u = User(password='cat')
         db.session.add(u)
         db.session.commit()
@@ -88,7 +92,7 @@ class UserModelTestCase(unittest.TestCase):
         self.assertTrue(u.verify_password('dog'))
 
     def test_invalid_reset_token(self):
-        """ 测试更改密码 """
+        """ 测试无效token更改密码 """
         u1 = User(password='cat')
         u2 = User(password='dog')
         db.session.add(u1)
@@ -99,7 +103,7 @@ class UserModelTestCase(unittest.TestCase):
         self.assertTrue(u2.verify_password('dog'))
 
     def test_valid_email_change_token(self):
-        """ 测试正确更改邮箱 """
+        """ 测试有效token更改邮箱 """
         u = User(email='john@example.com', password='cat')
         db.session.add(u)
         db.session.commit()
@@ -108,8 +112,8 @@ class UserModelTestCase(unittest.TestCase):
         self.assertTrue(u.change_email(token))
         self.assertTrue(u.email == 'susan@example.org')
 
-    # 测试错误更改邮箱
     def test_invalid_email_change_token(self):
+        """ 测试无效token更改邮箱 """
         u1 = User(email='john@example.com', password='cat')
         u2 = User(email='susan@example.org', password='dog')
         db.session.add(u1)
@@ -120,8 +124,8 @@ class UserModelTestCase(unittest.TestCase):
         self.assertFalse(u2.change_email(token))
         self.assertTrue(u2.email == 'susan@example.org')
 
-    # 测试更改后的邮箱已存在
     def test_duplicate_email_change_token(self):
+        """ 测试更改为已存在邮箱 """
         u1 = User(email='john@example.com', password='cat')
         u2 = User(email='susan@example.org', password='dog')
         db.session.add(u1)
@@ -131,14 +135,14 @@ class UserModelTestCase(unittest.TestCase):
         self.assertFalse(u2.change_email(token))
         self.assertTrue(u2.email == 'susan@example.org')
 
-    # 测试角色和权限
     def test_roles_and_permissions(self):
+        """ 测试角色和权限 """
         u = User(email='john@example.com', password='cat')
         self.assertTrue(u.can(Permission.WRITE_ARTICLES))
         self.assertFalse(u.can(Permission.MODERATE_COMMENTS))
 
-    # 测试匿名用户权限
     def test_anonymous_user(self):
+        """ 测试匿名用户权限 """
         u = AnonymousUser()
         self.assertFalse(u.can(Permission.FOLLOW))
 
@@ -179,3 +183,66 @@ class UserModelTestCase(unittest.TestCase):
         self.assertTrue('d=retro' in gravatar_retro)
         self.assertTrue('https://secure.gravatar.com/avatar/' +
                         'd4c74594d841139328695756648b6bd6' in gravatar_ssl)
+
+    def test_follows(self):
+        """ 测试关注功能 """
+        u1 = User(email='john@example.com', password='cat')
+        u2 = User(email='susan@example.org', password='dog')
+        db.session.add(u1)
+        db.session.add(u2)
+        db.session.commit()
+        self.assertFalse(u1.is_following(u2))
+        self.assertFalse(u1.is_followed_by(u2))
+        timestamp_before = datetime.utcnow()
+        u1.follow(u2)
+        db.session.add(u1)
+        db.session.commit()
+        timestamp_after = datetime.utcnow()
+        self.assertTrue(u1.is_following(u2))
+        self.assertFalse(u1.is_followed_by(u2))
+        self.assertTrue(u2.is_followed_by(u1))
+        self.assertTrue(u1.followed.count() == 1)
+        self.assertTrue(u2.followers.count() == 1)
+        f = u1.followed.all()[-1]
+        self.assertTrue(f.followed == u2)
+        self.assertTrue(timestamp_before <= f.timestamp <= timestamp_after)
+        f = u2.followers.all()[-1]
+        self.assertTrue(f.follower == u1)
+        u1.unfollow(u2)
+        db.session.add(u1)
+        db.session.commit()
+        self.assertTrue(u1.followed.count() == 0)
+        self.assertTrue(u2.followers.count() == 0)
+        self.assertTrue(Follow.query.count() == 0)
+        u2.follow(u1)
+        db.session.add(u1)
+        db.session.add(u2)
+        db.session.commit()
+        db.session.delete(u2)
+        db.session.commit()
+        self.assertTrue(Follow.query.count() == 0)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

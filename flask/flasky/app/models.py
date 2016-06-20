@@ -75,8 +75,19 @@ class Role(db.Model):
         return '<Role %r>' % self.name
 
 
+class Follow(db.Model):
+    """ 关注关联表 """
+    __tablename__ = 'follows'
+    follower_id = db.Column(db.Integer, db.ForeignKey('users.id'),
+                            primary_key=True)
+    followed_id = db.Column(db.Integer, db.ForeignKey('users.id'),
+                            primary_key=True)
+    timestamp = db.Column(db.DateTime, default=datetime.utcnow)
+
+
 # 继承UserMixin, 里面包含了is_authenticated等的默认实现
 class User(UserMixin, db.Model):
+    """ 用户表 """
     __tablename__ = 'users'
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(64), unique=True, index=True)
@@ -94,13 +105,28 @@ class User(UserMixin, db.Model):
     # db.Text()与db.String()区别为前者不需要指定长度
     about_me = db.Column(db.Text())
     # 注册日期
+    # default参数可接受函数, 所以datetime.utcnow没有(), 调用时生成当时时间
     member_since = db.Column(db.DateTime(), default=datetime.utcnow)
     # 最后访问日期
-    # default参数可接受函数, 所以datetime.utcnow没有(), 调用时生成当时时间
     last_seen = db.Column(db.DateTime(), default=datetime.utcnow)
     # 头像MD5值
     avatar_hash = db.Column(db.String(32))
     posts = db.relationship('Post', backref='author', lazy='dynamic')
+    # 被关注者list对象
+    followed = db.relationship('Follow',
+                               # 指定外键 消除歧义
+                               foreign_keys=[Follow.follower_id],
+                               # 向Follow反向添加关注者
+                               backref=db.backref('follower', lazy='joined'),
+                               lazy='dynamic',
+                               # 配置父对象上执行操作对相关对象的影响
+                               # delete-orphan 删除user时同时删除联接
+                               cascade='all, delete-orphan')
+    followers = db.relationship('Follow',
+                                foreign_keys=[Follow.followed_id],
+                                backref=db.backref('followed', lazy='joined'),
+                                lazy='dynamic',
+                                cascade='all, delete-orphan')
 
     @staticmethod
     def generate_fake(count=100):
@@ -154,19 +180,19 @@ class User(UserMixin, db.Model):
     def password(self, password):
         self.password_hash = generate_password_hash(password)
 
-    # 校验密码的hash, 返回True即密码正确
     def verify_password(self, password):
+        """ 校验密码的hash, 返回True即密码正确 """
         return check_password_hash(self.password_hash, password)
 
-    # 注册 生成token, 默认有效1h
     def generate_confirmation_token(self, expiration=3600):
+        """ 注册 生成token, 默认有效1h """
         # 创建序列化器
         s = Serializer(current_app.config['SECRET_KEY'], expiration)
         # 用当然用户ID生成token
         return s.dumps({'confirm': self.id})
 
-    # 注册 确认
     def confirm(self, token):
+        """ 注册 确认 """
         s = Serializer(current_app.config['SECRET_KEY'])
         try:
             # 还原数据
@@ -180,13 +206,13 @@ class User(UserMixin, db.Model):
         db.session.add(self)
         return True
 
-    # 重置密码 生成token
     def generate_reset_token(self, expiration=3600):
+        """ 重置密码 生成token """
         s = Serializer(current_app.config['SECRET_KEY'], expiration)
         return s.dumps({'reset': self.id})
 
-    # 重置密码 设置新密码
     def reset_password(self, token, new_password):
+        """ 重置密码 设置新密码 """
         s = Serializer(current_app.config['SECRET_KEY'])
         try:
             data = s.loads(token)
@@ -198,13 +224,13 @@ class User(UserMixin, db.Model):
         db.session.add(self)
         return True
 
-    # 更换邮箱 生成token
     def generate_email_change_token(self, new_email, expiration=3600):
+        """ 生成更换邮箱的token """
         s = Serializer(current_app.config['SECRET_KEY'], expiration)
         return s.dumps({'change_email': self.id, 'new_email': new_email})
 
-    # 更换邮箱
     def change_email(self, token):
+        """ 更换邮箱 """
         s = Serializer(current_app.config['SECRET_KEY'])
         try:
             data = s.loads(token)
@@ -233,7 +259,7 @@ class User(UserMixin, db.Model):
         return self.can(Permission.ADMINISTER)
 
     def ping(self):
-        # 更新用户最后访问时间
+        """ 更新用户最后访问时间 """
         self.last_seen = datetime.utcnow()
         db.session.add(self)
 
@@ -246,6 +272,29 @@ class User(UserMixin, db.Model):
             self.email.encode('utf-8')).hexdigest()
         return '{url}/{hash}?s={size}&d={default}&r={rating}'.format(
             url=url, hash=hash, size=size, default=default, rating=rating)
+
+    def follow(self, user):
+        """ 关注功能 """
+        if not self.is_following(user):
+            # 创建关注对象
+            f = Follow(follower=self, followed=user)
+            db.session.add(f)
+
+    def unfollow(self, user):
+        """ 取消关注功能 """
+        f = self.followed.filter_by(followed_id=user.id).first()
+        if f:
+            db.session.delete(f)
+
+    def is_following(self, user):
+        """ 是否关注了某人 """
+        return self.followed.filter_by(
+            followed_id=user.id).first() is not None
+
+    def is_followed_by(self, user):
+        """ 是否被某人关注 """
+        return self.followers.filter_by(
+            follower_id=user.id).first() is not None
 
     @property
     def __repr__(self):
@@ -304,6 +353,7 @@ class Post(db.Model):
         target.body_html = bleach.linkify(bleach.clean(
             markdown(value, output_format='html'), tags=allowed_tags,
             strip=True))
+
 
 # on_changed_body函数注册在body字段上, 是SQLAlchemy 'set' 事件的监听程序
 # 当类实例的body字段设了新值, 函数会自动调用 ?暂未体会到
