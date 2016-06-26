@@ -73,3 +73,10 @@ class PostForm(Form):
     # 使用markdown字段类型
     body = PageDownField("What's on your mind?", validators=[DataRequired()])
     submit = SubmitField('Submit')
+
+
+class CommentForm(Form):
+    """ 评论表 """
+    body = StringField('Enter your comment', validators=[DataRequired()])
+    submit = SubmitField('Submit')
+

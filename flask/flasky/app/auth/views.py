@@ -32,9 +32,9 @@ def before_request():
             return redirect(url_for('auth.unconfirmed'))
 
 
-# 处理未激活的账户
 @auth.route('/unconfirmed')
 def unconfirmed():
+    """ 处理未激活的账户 """
     if current_user.is_anonymous or current_user.confirmed:
         return redirect(url_for('main1.index'))
     return render_template('auth/unconfirmed.html')

@@ -127,6 +127,8 @@ class User(UserMixin, db.Model):
                                 backref=db.backref('followed', lazy='joined'),
                                 lazy='dynamic',
                                 cascade='all, delete-orphan')
+    # 一的一侧定义relationship
+    comments = db.relationship('Comment', backref='author', lazy='dynamic')
 
     @staticmethod
     def generate_fake(count=100):
@@ -155,6 +157,15 @@ class User(UserMixin, db.Model):
             except IntegrityError:
                 db.session.rollback()
 
+    @staticmethod
+    def add_self_follows():
+        """ 用户自关注 """
+        for user in User.query.all():
+            if not user.is_following(user):
+                user.follow(user)
+                db.session.add(user)
+                db.session.commit()
+
     def __init__(self, **kwargs):
         super(User, self).__init__(**kwargs)
         # 若基类未定义角色
@@ -169,8 +180,14 @@ class User(UserMixin, db.Model):
         if self.email is not None and self.avatar_hash is None:
             self.avatar_hash = hashlib.md5(
                 self.email.encode('utf-8')).hexdigest()
+        # 设定自己关注自己, 以使首页关注的人动态中可出现自己
+        # self.follow(self)     # 等价以下
+        # 测试follower参数不传也可以, 暂时?
+        self.followed.append(Follow(followed=self))
 
-    # 只读属性, 密码散列, 原密码不存在, 返回错误
+    # 定义为属性, 由于密码已散列, 原始密码不存在, 所以当以User.password使用时返回错误
+    # 定义@property后, 调用不需要加(), 即User.password() == User.password
+    # 使方法可以像属性一样使用, 如User.query
     @property
     def password(self):
         raise AttributeError('password is not a readable attribute')
@@ -296,6 +313,15 @@ class User(UserMixin, db.Model):
         return self.followers.filter_by(
             follower_id=user.id).first() is not None
 
+    # @property 调用类似属性, 不加(), 与其他关系的句法保持一致
+    @property
+    def followed_posts(self):
+        """ 被关注者的所有文章 """
+        # Post.query 查询主体
+        #                 join 联接表      用来联接的列
+        return Post.query.join(Follow, Follow.followed_id == Post.author_id) \
+            .filter(Follow.follower_id == self.id)
+
     @property
     def __repr__(self):
         return '<User %r>' % self.username
@@ -328,6 +354,7 @@ class Post(db.Model):
     body_html = db.Column(db.Text)
     timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
     author_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    comments = db.relationship('Comment', backref='post', lazy='dynamic')
 
     @staticmethod
     def generate_fake(count=100):
@@ -349,7 +376,7 @@ class Post(db.Model):
         allowed_tags = ['a', 'abbr', 'acronym', 'b', 'blockquote', 'code',
                         'em', 'i', 'li', 'ol', 'pre', 'strong', 'ul',
                         'h1', 'h2', 'h3', 'p']
-        # linkfy 将纯文本中的URL转换成适当的<a>
+        # linkify 将纯文本中的URL转换成适当的<a>
         target.body_html = bleach.linkify(bleach.clean(
             markdown(value, output_format='html'), tags=allowed_tags,
             strip=True))
@@ -358,3 +385,27 @@ class Post(db.Model):
 # on_changed_body函数注册在body字段上, 是SQLAlchemy 'set' 事件的监听程序
 # 当类实例的body字段设了新值, 函数会自动调用 ?暂未体会到
 db.event.listen(Post.body, 'set', Post.on_changed_body)
+
+
+class Comment(db.Model):
+    """ 评论类 """
+    __tablename__ = 'comments'
+    id = db.Column(db.Integer, primary_key=True)
+    body = db.Column(db.Text)
+    body_html = db.Column(db.Text)
+    timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
+    disabled = db.Column(db.Boolean)
+    author_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    # 多的一侧定义外键
+    post_id = db.Column(db.Integer, db.ForeignKey('posts.id'))
+
+    @staticmethod
+    def on_changed_body(target, value, oldvalue, initiator):
+        allowed_tags = ['a', 'abbr', 'acronym', 'b', 'code', 'em', 'i',
+                        'strong']
+        # linkify 将纯文本中的URL转换成适当的<a>
+        target.body_html = bleach.linkify(bleach.clean(
+            markdown(value, output_format='html'), tags=allowed_tags,
+            strip=True))
+
+db.event.listen(Comment.body, 'set', Comment.on_changed_body)

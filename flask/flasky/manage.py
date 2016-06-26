@@ -11,7 +11,7 @@ from flask_script import Manager, Shell
 from flask_migrate import Migrate, MigrateCommand
 
 from app import create_app, db
-from app.models import User, Follow, Role, Permission, Post
+from app.models import User, Follow, Role, Permission, Post, Comment
 
 app = create_app(os.getenv('FLASK_CONFIG') or 'default')
 manager = Manager(app)
@@ -23,7 +23,7 @@ migrate = Migrate(app, db)
 # 注册app, db, User, Role
 def make_shell_context():
     return dict(app=app, db=db, User=User, Follow=Follow, Role=Role,
-                Permission=Permission, Post=Post)
+                Permission=Permission, Post=Post, Comment=Comment)
 
 
 # shell 注册make_context回调函数, 自动导入app等对象

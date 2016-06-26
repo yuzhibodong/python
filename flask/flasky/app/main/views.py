@@ -4,14 +4,14 @@
 # @Author  : Bluethon (j5088794@gmail.com)
 # @Link    : http://github.com/bluethon
 
-from flask import render_template, redirect, url_for, flash, request, \
-    current_app, abort
+from flask import render_template, redirect, url_for, abort, flash, request, \
+    current_app, make_response
 from flask_login import login_required, current_user
 
 from . import main
-from .forms import EditProfileForm, EditProfileAdminForm, PostForm
+from .forms import EditProfileForm, EditProfileAdminForm, PostForm, CommentForm
 from .. import db
-from ..models import Permission, Role, User, Post
+from ..models import Permission, Role, User, Post, Comment
 from ..decorators import admin_required, permission_required
 
 
@@ -28,15 +28,22 @@ def index():
         return redirect(url_for('.index'))
     # 从请求的查询字符串(request.args)中获取渲染的页数, 默认第一页
     page = request.args.get('page', 1, type=int)
+    show_followed = False
+    if current_user.is_authenticated:
+        show_followed = bool(request.cookies.get('show_followed', ''))
+    if show_followed:
+        query = current_user.followed_posts
+    else:
+        query = Post.query
     # 将all()方法换为paginate()方法 来显示某页的记录
     # args: 页数, [每页显示多少], [True->404; False->null list]
-    pagination = Post.query.order_by(Post.timestamp.desc()).paginate(
+    pagination = query.order_by(Post.timestamp.desc()).paginate(
         page, per_page=current_app.config['FLASKY_POSTS_PER_PAGE'],
         error_out=False)
     # 当页内容
     posts = pagination.items
     return render_template('index.html', form=form, posts=posts,
-                           pagination=pagination)
+                           show_followed=show_followed, pagination=pagination)
 
 
 @main.route('/user/<username>')
@@ -100,12 +107,30 @@ def edit_profile_admin(id):
     return render_template('edit_profile.html', form=form, user=user)
 
 
-@main.route('/post/<int:id>')
+@main.route('/post/<int:id>', methods=['GET', 'POST'])
 def post(id):
     """ 文章永久链接页面 """
     post = Post.query.get_or_404(id)
+    form = CommentForm()
+    if form.validate_on_submit():
+        comment = Comment(body=form.body.data, post=post,
+                          author=current_user._get_current_object())
+        db.session.add(comment)
+        flash('Your comment has been published.')
+        return redirect(url_for('.post', id=post.id, page=-1))
+    page = request.args.get('page', 1, type=int)
+    if page == -1:
+        # eg: count=21, PER_PAGE=10, page=3
+        # 改动 // 进行地板除
+        page = (post.comments.count() - 1) // current_app.config[
+            'FLASKY_COMMENTS_PER_PAGE'] + 1
+    pagination = post.comments.order_by(Comment.timestamp.asc()).paginate(
+        page, per_page=current_app.config['FLASKY_COMMENTS_PER_PAGE'],
+        error_out=False)
+    comments = pagination.items
     # [post], 转为list, 因为_posts.html中作为列表渲染
-    return render_template('post.html', posts=[post])
+    return render_template('post.html', posts=[post], form=form,
+                           comments=comments, pagination=pagination)
 
 
 @main.route('/edit/<int:id>', methods=['GET', 'POST'])
@@ -131,6 +156,7 @@ def edit(id):
 @login_required
 @permission_required(Permission.FOLLOW)
 def follow(username):
+    """ 关注 """
     user = User.query.filter_by(username=username).first()
     if user is None:
         flash('Invalid user.')
@@ -147,6 +173,7 @@ def follow(username):
 @login_required
 @permission_required(Permission.FOLLOW)
 def unfollow(username):
+    """ 取消关注 """
     user = User.query.filter_by(username=username).first()
     if user is None:
         flash('Invalid user.')
@@ -161,6 +188,7 @@ def unfollow(username):
 
 @main.route('/followers/<username>')
 def followers(username):
+    """ 关注者列表页面 """
     user = User.query.filter_by(username=username).first()
     if user is None:
         flash('Invalid user.')
@@ -169,19 +197,23 @@ def followers(username):
     pagination = user.followers.paginate(
         page, per_page=current_app.config['FLASKY_FOLLOWERS_PER_PAGE'],
         error_out=False)
+    # 为渲染方便, 将 Follow实例 列表转换为新的列表
     follows = [{'user': item.follower, 'timestamp': item.timestamp}
                for item in pagination.items]
     return render_template('followers.html', user=user, title="Followers of",
+                           # 分页连接使用的端点          分页对象
                            endpoint='.followers', pagination=pagination,
                            follows=follows)
 
 
 @main.route('/followed-by/<username>')
 def followed_by(username):
+    """ 被关注者列表页面 """
     user = User.query.filter_by(username=username).first()
     if user is None:
         flash('Invalid user.')
         return redirect(url_for('.index'))
+
     page = request.args.get('page', 1, type=int)
     pagination = user.followed.paginate(
         page, per_page=current_app.config['FLASKY_FOLLOWERS_PER_PAGE'],
@@ -191,3 +223,21 @@ def followed_by(username):
     return render_template('followers.html', user=user, title="Followed by",
                            endpoint='.followed_by', pagination=pagination,
                            follows=follows)
+
+
+@main.route('/all')
+@login_required
+def show_all():
+    """ 首页显示所有文章 """
+    resp = make_response(redirect(url_for('.index')))
+    resp.set_cookie('show_followed', '', max_age=30 * 24 * 60 * 60)
+    return resp
+
+
+@main.route('/followed')
+@login_required
+def show_followed():
+    """ 首页仅显示关注的人的文章"""
+    resp = make_response(redirect(url_for('.index')))
+    resp.set_cookie('show_followed', '1', max_age=30 * 24 * 60 * 60)
+    return resp
