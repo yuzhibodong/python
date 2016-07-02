@@ -11,5 +11,5 @@ flask/flasky/venv
 *.idea/
 
 # SQLite databases
-*.sqlite
+*.sqlite*
 

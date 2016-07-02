@@ -36,6 +36,10 @@
                 {# 定义右上角登陆 #}
                 <ul class="nav navbar-nav navbar-right">
                     {# current_user由Flask-Login定义, 在视图和模板中自动可用 #}
+                    <!-- 管理评论链接 -->
+                    {% if current_user.can(Permission.MODERATE_COMMENTS) %}
+                        <li><a href="{{ url_for('main1.moderate') }}">Moderate Comments</a></li>
+                    {% endif %}
                     {% if current_user.is_authenticated %}
                         <li class="dropdown">
                             <a href="#" class="dropdown-toggle" data-toggle="dropdown">

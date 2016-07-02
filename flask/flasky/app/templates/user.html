@@ -55,6 +55,7 @@
     </div>
     <h3> Posts by {{ user.username }}</h3>
     {% include '_posts.html' %}
+    <!-- 底部分页导航 -->
     {% if pagination %}
         <div class="pagination">
             {{ macros.pagination_widget(pagination, '.user', username=user.username) }}
