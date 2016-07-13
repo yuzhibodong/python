@@ -10,4 +10,5 @@ from flask import Blueprint
 
 auth = Blueprint('auth', __name__)
 
+# noinspection PyUnresolvedReferences
 from . import views

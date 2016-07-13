@@ -1,5 +1,9 @@
 test.py
+test.js
 *.pyc
+
+# temp
+flask/flasky/tmp
 
 flask/microblog/flask
 

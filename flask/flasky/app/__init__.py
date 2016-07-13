@@ -55,6 +55,10 @@ def create_app(config_name):
     # eg. /login 注册位 /auth/login, 完整URL->http://localhost:5000/auth/login
     app.register_blueprint(auth_blueprint, url_prefix='/auth')
 
+    # API蓝本
+    from .api_1_0 import api as api_1_0_blueprint
+    app.register_blueprint(api_1_0_blueprint, url_prefix='/api/v1.0')
+
     # 附加路由和自定义的错误页面
     # 已被分解到main中
 

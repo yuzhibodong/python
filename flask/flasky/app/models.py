@@ -15,10 +15,11 @@ from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
 from markdown import markdown
 import bleach
 # 用于登陆
-from flask import current_app, request
+from flask import current_app, request, url_for
 from flask_login import UserMixin, AnonymousUserMixin
 
 from . import db, login_manager
+from .exceptions import ValidationError
 
 
 class Permission:
@@ -322,12 +323,44 @@ class User(UserMixin, db.Model):
         return Post.query.join(Follow, Follow.followed_id == Post.author_id) \
             .filter(Follow.follower_id == self.id)
 
+    def to_json(self):
+        """ API 生成用户序列化字典, 为JSON化 """
+        json_user = {
+            'url': url_for('api.get_user', id=self.id, _external=True),
+            'username': self.username,
+            'member_since': self.member_since,
+            'last_seen': self.last_seen,
+            'post': url_for('api.get_user_posts', id=self.id, _external=True),
+            'followed_posts': url_for('api.get_user_followed_posts',
+                                      id=self.id, _external=True),
+            'post_count': self.posts.count()
+        }
+        return json_user
+
+    def generate_auth_token(self, expiration):
+        """ 生成API认证令牌 """
+        s = Serializer(current_app.config['SECRET_KEY'], expires_in=expiration)
+        # 默认不转码为二进制数据, 但二进制在发送的邮件中会转成ascii码
+        return s.dumps({'id': self.id}).decode('ascii')
+
+    # 解码令牌后才知道用户是谁, 所以使用静态方法
+    @staticmethod
+    def verify_auth_token(token):
+        """ 验证API认证令牌 """
+        s = Serializer(current_app.config['SECRET_KEY'])
+        try:
+            data = s.load(token)
+        except:
+            return None
+        return User.query.get(data['id'])
+
     @property
     def __repr__(self):
         return '<User %r>' % self.username
 
 
 # 一致性考虑, 实现匿名用户的验证方法
+# noinspection PyUnusedLocal
 class AnonymousUser(AnonymousUserMixin):
     def can(self, permissions):
         return False
@@ -368,9 +401,10 @@ class Post(db.Model):
             p = Post(body=forgery_py.lorem_ipsum.sentences(randint(1, 5)),
                      timestamp=forgery_py.date.date(True),
                      author=u)
-            db.session.add(u)
+            db.session.add(p)
             db.session.commit()
 
+    # noinspection PyUnusedLocal
     @staticmethod
     def on_changed_body(target, value, oldvalue, initiator):
         allowed_tags = ['a', 'abbr', 'acronym', 'b', 'blockquote', 'code',
@@ -380,6 +414,32 @@ class Post(db.Model):
         target.body_html = bleach.linkify(bleach.clean(
             markdown(value, output_format='html'), tags=allowed_tags,
             strip=True))
+
+    def to_json(self):
+        """ 文章的序列化字典, 为了转换成JSON"""
+        json_post = {
+            # 定义external, 生成站外使用的网站URL
+            'url': url_for('api.get_post', id=self.id, _external=True),
+            'body': self.body,
+            'body_html': self.body_html,
+            'timestamp': self.timestamp,
+            # 需要返回资源的URL, 因此使用url_for
+            'author': url_for('api.get_user', id=self.author_id,
+                              _external=True),
+            'comments': url_for('api.get_post_comments', id=self.id,
+                                _external=True),
+            # 评论数量并不是模型的属性, 不必一对一, 只是为了方便客户端使用
+            'comment_count': self.comments.count()
+        }
+        return json_post
+
+    @staticmethod
+    def from_json(json_post):
+        body = json_post.get('body')
+        if body is None or body == '':
+            # 因为form_json没有掌握处理问题的足够信息, 抛出异常交给调用者处理
+            raise ValidationError('post does not have a body')
+        return Post(body=body)
 
 
 # on_changed_body函数注册在body字段上, 是SQLAlchemy 'set' 事件的监听程序
@@ -399,13 +459,36 @@ class Comment(db.Model):
     # 多的一侧定义外键
     post_id = db.Column(db.Integer, db.ForeignKey('posts.id'))
 
+    # noinspection PyUnusedLocal
     @staticmethod
     def on_changed_body(target, value, oldvalue, initiator):
+        """ 评论修改触发body渲染body_html """
         allowed_tags = ['a', 'abbr', 'acronym', 'b', 'code', 'em', 'i',
                         'strong']
         # linkify 将纯文本中的URL转换成适当的<a>
         target.body_html = bleach.linkify(bleach.clean(
             markdown(value, output_format='html'), tags=allowed_tags,
             strip=True))
+
+    def to_json(self):
+        """ API 评论 序列化字典, 转JSON用 """
+        json_comment = {
+            'url': url_for('api.get_comment', id=self.id, _external=True),
+            'post': url_for('api.get_post', id=self.post_id, _external=True),
+            'body': self.body,
+            'body_html': self.body_html,
+            'timestamp': self.timestamp,
+            'author': url_for('api.get_user', id=self.author_id, _external=True)
+        }
+        return json_comment
+
+    @staticmethod
+    def from_json(json_comment):
+        """ API JSON格式评论创建评论类 """
+        body = json_comment.get('body')
+        if body is None or body == '':
+            raise ValidationError('comment does not have a body')
+        return Comment(body=body)
+
 
 db.event.listen(Comment.body, 'set', Comment.on_changed_body)
