@@ -9,7 +9,7 @@
     <div class="page-header">
         <img src="{{ user.gravatar(size=256) }}" class="img-rounded profile-thumbnail">
         <div class="profile-header">
-            <h1>{{ user.username }}!</h1>
+            <h1>{{ user.username }}</h1>
             {% if user.name or user.location %}
                 <p>
                     {% if user.name %}

@@ -40,6 +40,7 @@ manager.add_command('shell', Shell(make_context=make_shell_context))
 manager.add_command('db', MigrateCommand)
 
 
+# 修饰器 自定义命令, 函数名即为命令名
 @manager.command
 # test() 添加布尔值参数 即可 为test命令添加布尔值选项
 def test(coverage=False):
@@ -70,6 +71,33 @@ def test(coverage=False):
         COV.html_report(directory=covdir)
         print('HTML version: file://%s/index.html' % covdir)
         COV.erase()
+
+
+@manager.command
+def profile(length=25, profile_dir=None):
+    """ 代码分析器监视下启动 app """
+    # 使用`python manage.py profile`启动, 终端会显示每条请求的分析数据
+    # 包含最慢运行的25个函数, --length 选项可修改, 指定--profile_dir可用指定保存目录
+    # 官方文档(https://docs.python.org/3/library/profile.html)
+    from werkzeug.contrib.profiler import ProfilerMiddleware
+    app.wsgi_app = ProfilerMiddleware(app.wsgi_app, restrictions=[length],
+                                      profile_dir=profile_dir)
+    app.run()
+
+
+@manager.command
+def deploy():
+    """ 部署命令 """
+    # 自动执行命令
+    from flask_migrate import upgrade
+    from app.models import Role, User
+
+    # 迁移数据库到最新版本
+    upgrade()
+
+    Role.insert_roles()
+
+    User.add_self_follows()
 
 
 if __name__ == '__main__':

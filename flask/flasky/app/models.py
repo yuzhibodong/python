@@ -349,7 +349,7 @@ class User(UserMixin, db.Model):
         """ 验证API认证令牌 """
         s = Serializer(current_app.config['SECRET_KEY'])
         try:
-            data = s.load(token)
+            data = s.loads(token)
         except:
             return None
         return User.query.get(data['id'])

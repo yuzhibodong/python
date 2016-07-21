@@ -32,7 +32,7 @@ class UserModelTestCase(unittest.TestCase):
 
     # u.username为空
     def test_password_setter(self):
-        """" 测试pw只写方法 """
+        """ 测试pw只写方法 """
         u = User(password='cat')
         self.assertTrue(u.password_hash is not None)
 
@@ -163,7 +163,7 @@ class UserModelTestCase(unittest.TestCase):
         time.sleep(2)
         last_seen_before = u.last_seen
         u.ping()
-        self.assertTrue(u.last_seen > u.member_since)
+        self.assertTrue(u.last_seen > last_seen_before)
 
     def test_gravatar(self):
         """ 测试头像 """

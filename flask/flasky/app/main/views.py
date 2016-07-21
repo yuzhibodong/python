@@ -7,6 +7,7 @@
 from flask import render_template, redirect, url_for, abort, flash, request, \
     current_app, make_response
 from flask_login import login_required, current_user
+from flask_sqlalchemy import get_debug_queries
 
 from . import main
 from .forms import EditProfileForm, EditProfileAdminForm, PostForm, CommentForm
@@ -15,8 +16,47 @@ from ..models import Permission, Role, User, Post, Comment
 from ..decorators import admin_required, permission_required
 
 
+# after_app_request 视图函数处理玩请求后执行
+# Flask把响应对象传给after_app_request, 以防需要修改响应
+@main.after_app_request
+def after_request(response):
+    # 获取Flask-SQLAlchemy记录的查询时间, 将缓慢的查询写入日志
+    # get_debug_queries()返回列表, 默认情况仅**调试模式**可用
+    """
+    statement   SQL语句
+    parameters  SQL语句使用的参数
+    start_time  执行查询开始的时刻
+    end_time    返回查询结果的时刻
+    duration    查询持续时间, 单位秒/s
+    context     查询在源码中所处位置的字符串
+    """
+    for query in get_debug_queries():
+        if query.duration >= current_app.config['FLASKY_SLOW_DB_QUERY_TIME']:
+            current_app.logger.warning(
+                'Slow query: %s\nParameters: %s\nDuration: %fs\nContext: %s\n'
+                % (query.statement, query.parameters, query.duration,
+                   query.context))
+    return response
+
+
+@main.route('/shutdown')
+def server_shutdown():
+    """ 路由 关闭服务器 """
+    # 用于测试完成后, 停止后台线程的开发服务器
+    # 测试环境, 此路由才可用
+    if not current_app.testing:
+        abort(404)
+    shutdown = request.environ.get('werkzeug.server.shutdown')
+    if not shutdown:
+        abort(500)
+    # 调用Werkzeug环境中提供的关闭函数
+    shutdown()
+    return 'Shutting down...'
+
+
 @main.route('/', methods=['GET', 'POST'])
 def index():
+    """ 路由 首页 """
     form = PostForm()
     if current_user.can(Permission.WRITE_ARTICLES) and \
             form.validate_on_submit():
