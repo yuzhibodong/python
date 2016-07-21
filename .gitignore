@@ -17,3 +17,5 @@ flask/flasky/venv
 # SQLite databases
 *.sqlite*
 
+# Foreman环境变量文件
+*.env

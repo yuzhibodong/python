@@ -16,6 +16,8 @@ class Config:
     # 防止CSRF, wtf使用的密匙
     SECRET_KEY = os.environ.get(
         'SECRET_KEY', default=None) or 'hard to guess string'
+    # SSL开关
+    SSL_DISABLE = False
     # True, 每次请求结束, 自动提交数据库中变动
     SQLALCHEMY_COMMIT_ON_TEARDOWN = True
     # 记录查询统计数字功能
@@ -93,11 +95,39 @@ class ProductionConfig(Config):
         app.logger.addHandler(mail_handler)
 
 
+class HerokuConfig(Config):
+    SSL_DISABLE = bool(os.environ.get('SSL_DISABLE'))
+
+    @classmethod
+    def init_app(cls, app):
+        ProductionConfig.init_app(app)
+
+        """
+        加入Werkzeug提供的WSGI中间件
+        检查代理服务器发出的自定义首部并对请求对象进行更新
+        使用Heroku, 会在客户端和app间加入反代, 反代到app由于在Heroku内部使用SSL
+        Eg: 修改后request.is_secure使用Client -> Reverse Proxy的请安全性
+        处理代理服务器首部
+        handle proxy server headers
+        """
+        from werkzeug.contrib.fixers import ProxyFix
+        app.wsgi_app = ProxyFix(app.wsgi_app)
+
+        # Heroku中, 日志写入stdout或stderr, Heroku才会捕获到
+        # log to stderr
+        import logging
+        from logging import StreamHandler
+        file_handler = StreamHandler()
+        file_handler.setLevel(logging.WARNING)
+        app.logger.addHandler(file_handler)
+
+
 # config字典注册不同的配置环境
 config = {
     'development': DevelopmentConfig,
     'testing': TestingConfig,
     'production': ProductionConfig,
+    'heroku': HerokuConfig,
 
     'default': DevelopmentConfig
 }

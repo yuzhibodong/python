@@ -44,6 +44,11 @@ def create_app(config_name):
     login_manager.init_app(app)
     pagedown.init_app(app)
 
+    # 生产环境启动https
+    if not app.debug and not app.testing and not app.config['SSL_DISABLE']:
+        from flask_sslify import SSLify
+        sslify = SSLify(app)
+
     # 导入蓝本, 开始定义路由, 因为否则无法使用app.route等修饰器
     from .main import main as main_blueprint
     # 蓝本中定义的路由处于休眠状态, 直到蓝本注册到app上后, 路由才真正成为app的一部分
