@@ -1,21 +1,19 @@
+# files--------------
 test.py
 test.js
 *.pyc
-
-# temp
-flask/flasky/tmp
-
-flask/microblog/flask
-
-# Virtual environment
-flask/flasky/venv
-
-# Developer
-*.sublime-*
-*.idea/
-
 # SQLite databases
 *.sqlite*
 
+# folders------------
+# temp
+flask/flasky/tmp
+flask/microblog/flask
+# Virtual environment
+*venv/
+
+# Developer----------
+*.sublime-*
+*.idea/
 # Foreman环境变量文件
 *.env
