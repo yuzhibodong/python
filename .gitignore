@@ -1,4 +1,5 @@
 # files--------------
+*.jpg
 test.py
 test.js
 *.pyc
@@ -7,6 +8,7 @@ test.js
 
 # folders------------
 # temp
+migrations
 flask/flasky/tmp
 flask/microblog/flask
 # Virtual environment
