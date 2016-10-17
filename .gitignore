@@ -8,7 +8,7 @@ test.js
 
 # folders------------
 # temp
-migrations
+# migrations
 flask/flasky/tmp
 flask/microblog/flask
 # Virtual environment
