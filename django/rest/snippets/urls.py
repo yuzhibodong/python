@@ -10,6 +10,8 @@ urlpatterns = [
     # url(r'^snippets/(?P<pk>[0-9]+)/$', views.snippet_detail),
     url(r'^snippets/$', views.SnippetList.as_view()),
     url(r'^snippets/(?P<id>[0-9]+)/$', views.SnippetDetail.as_view()),
+    url(r'^users/$', views.UserList.as_view()),
+    url(r'^users/(?P<id>[0-9]+)/$', views.UserDetail.as_view()),
 ]
 
 # Using format suffixes gives us URLs that explicitly refer to a given

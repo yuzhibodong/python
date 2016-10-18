@@ -1,5 +1,8 @@
 example
-========
+=======
+
+note
+----
 
 ``` python
 # model
@@ -86,5 +89,6 @@ http --json POST http://127.0.0.1:8000/snippets/ code="print 456"
 # see request type
 http --debug --json POST http://127.0.0.1:8000/snippets/ code="print 456"
 http://127.0.0.1:8000/snippets/
+
 
 ```
