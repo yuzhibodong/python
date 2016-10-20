@@ -19,3 +19,6 @@ flask/microblog/flask
 *.idea/
 # Foreman环境变量文件
 *.env
+
+# Exclude -------
+!django/rest/*.sqlite*
