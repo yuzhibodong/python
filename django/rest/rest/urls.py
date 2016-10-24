@@ -23,5 +23,7 @@ urlpatterns = [
 
 # In Django 1.9+, REST framework will set the namespace, so you may leave it out.
 urlpatterns += [
-    url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework')),
+    url(r'^api-auth/', include('rest_framework.urls',
+                               # namespace='rest_framework'
+                               )),
 ]

@@ -6,16 +6,18 @@
 # from django.http import Http404
 
 # from rest_framework.views import APIView
-# from rest_framework.response import Response
+from rest_framework.response import Response
+from rest_framework.reverse import reverse
 # from rest_framework import status
-# from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view
 # from rest_framework import mixins
 from rest_framework import generics
 from rest_framework import permissions
 from django.contrib.auth.models import User
 
-from snippets.models import Snippet
-from snippets.serializers import SnippetSerializer, UserSerializer
+from .models import Snippet
+from .serializers import SnippetSerializer, UserSerializer
+from .permissions import IsOwnerOrReadOnly
 
 
 # class JSONResponse(HttpResponse):
@@ -159,7 +161,7 @@ from snippets.serializers import SnippetSerializer, UserSerializer
 #         return self.destroy(request, *args, **kwargs)
 
 
-class SnippetList(generics.ListAPIView):
+class SnippetList(generics.ListCreateAPIView):
     queryset = Snippet.objects.all()
     serializer_class = SnippetSerializer
     # 设置访问权限, 又权限可读写, 无权限可读
@@ -167,6 +169,7 @@ class SnippetList(generics.ListAPIView):
 
     # The create() method of our serializer will now be passed an additional 'owner' field,
     # along with the validated data from the request.
+    # 修改默认实例保存方式
     def perform_create(self, serializer):
         serializer.save(owner=self.request.user)
 
@@ -174,7 +177,8 @@ class SnippetList(generics.ListAPIView):
 class SnippetDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = Snippet.objects.all()
     serializer_class = SnippetSerializer
-    permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
+    permission_classes = (permissions.IsAuthenticatedOrReadOnly,
+                          IsOwnerOrReadOnly)
 
 
 class UserList(generics.ListAPIView):
@@ -185,3 +189,13 @@ class UserList(generics.ListAPIView):
 class UserDetail(generics.RetrieveAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
+
+
+@api_view(['GET'])
+def api_root(request, format=None):
+    # using REST framework's reverse function in order to return fully-qualified URLs
+    return Response({
+        'user': reverse('user-list', request=request, format=format),
+        'snippets': reverse('snippet-list', request=request, format=format)
+    })
+    pass
