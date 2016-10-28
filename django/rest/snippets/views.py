@@ -13,6 +13,7 @@ from rest_framework.decorators import api_view
 # from rest_framework import mixins
 from rest_framework import generics
 from rest_framework import permissions
+from rest_framework import renderers
 from django.contrib.auth.models import User
 
 from .models import Snippet
@@ -194,8 +195,20 @@ class UserDetail(generics.RetrieveAPIView):
 @api_view(['GET'])
 def api_root(request, format=None):
     # using REST framework's reverse function in order to return fully-qualified URLs
+    # {
+    #     "snippets": "http://localhost:8000/snippets/",
+    #     "user": "http://localhost:8000/users/"
+    # }
     return Response({
         'user': reverse('user-list', request=request, format=format),
         'snippets': reverse('snippet-list', request=request, format=format)
     })
-    pass
+
+
+class SnippetHighlight(generics.GenericAPIView):
+    queryset = Snippet.objects.all()
+    renderer_classes = (renderers.StaticHTMLRenderer,)
+
+    def get(self, request, *args, **kwargs):
+        snippet = self.get_object()
+        return Response(snippet.highlighted)

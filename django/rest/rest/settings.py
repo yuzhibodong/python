@@ -134,3 +134,7 @@ STATIC_URL = '/static/'
 # DEBUG = False
 # url append a trailing slash 末尾斜线
 # APPEND_SLASH = False
+
+REST_FRAMEWORK = {
+    'PAGE_SIZE': 10
+}
